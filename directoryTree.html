@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">测试</button>
+  </body>
+  <script>
+    const btn = document.getElementById("btn");
+    btn.addEventListener("click", () => {
+      start();
+    });
+
+    async function createDirectoryTree(directoryHandle) {
+      const tree = {
+        name: directoryHandle.name,
+        type: "directory",
+        handle: directoryHandle,
+        children: [],
+      };
+
+      for await (const [name, handle] of directoryHandle) {
+        if (handle.kind === "directory") {
+          const childTree = await createDirectoryTree(handle);
+          tree.children.push(childTree);
+        } else {
+          tree.children.push({ name, type: "file", handle });
+        }
+      }
+
+      return tree;
+    }
+
+    async function start() {
+      try {
+        const directoryHandle = await window.showDirectoryPicker();
+        const directoryTree = await createDirectoryTree(directoryHandle);
+
+        console.log("Directory structure:");
+        console.log(directoryTree);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const tree = {
+      name: "test",
+      type: "directory",
+      children: [
+        {
+          name: ".DS_Store",
+          type: "file",
+          handle: {},
+        },
+        {
+          name: "sdPlay_265_g711u",
+          type: "directory",
+          children: [
+            {
+              name: "day_idx.bin",
+              type: "file",
+              handle: {},
+            },
+            {
+              name: ".DS_Store",
+              type: "file",
+              handle: {},
+            },
+            {
+              name: "1689069654_0048",
+              type: "directory",
+              children: [
+                {
+                  name: "0010.media",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: "0031.media",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: "0000.media",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: "0041.media",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: "0020.media",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: "1689069654.jpg",
+                  type: "file",
+                  handle: {},
+                },
+                {
+                  name: ".info",
+                  type: "file",
+                  handle: {},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    function dfs(tree) {
+      console.log(tree.name); // 输出节点名称
+
+      if (tree.children && tree.children.length > 0) {
+        for (const child of tree.children) {
+          dfs(child);
+        }
+      }
+    }
+
+    // 用法示例
+    // dfs(tree);
+
+    function bfs(tree) {
+      const queue = [tree];
+
+      while (queue.length > 0) {
+        const currentNode = queue.shift();
+        console.log(currentNode.name); // 输出节点名称
+
+        if (currentNode.children && currentNode.children.length > 0) {
+          queue.push(...currentNode.children);
+        }
+      }
+    }
+    bfs(tree)
+  </script>
+</html>

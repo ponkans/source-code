@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    const source = {
+      a: 123,
+      b: [22, 33],
+      c: { name: 222 },
+    };
+
+    function deepClone(source) {
+      let result = source;
+
+      if (Object.prototype.toString.call(source) === '[object Object]') {
+        result = {}
+        // Object.keys 不会遍历原型上的属性
+        // 如果使用 for in，需要使用 source.hasOwnProperty(key) 进行过滤处理
+        Object.keys(source).forEach((key) => {
+          result[key] = deepClone(source[key]);
+        });
+      }
+
+      if (Array.isArray(source)) {
+        result = []
+        source.forEach((item, index) => {
+          result[index] = deepClone(item);
+        });
+      }
+
+      return result;
+    }
+
+    let target = deepClone(source)
+  </script>
+</html>
