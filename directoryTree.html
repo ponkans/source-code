@@ -115,31 +115,29 @@
       ],
     };
 
-    function dfs(tree) {
-      console.log(tree.name); // 输出节点名称
-
-      if (tree.children && tree.children.length > 0) {
-        for (const child of tree.children) {
-          dfs(child);
+    function dfs(node) {
+      console.log(node.name);
+      if (node.children && node.children.length > 0) {
+        for (let item of node.children) {
+          dfs(item);
         }
       }
     }
 
     // 用法示例
     // dfs(tree);
+    // debugger
 
-    function bfs(tree) {
-      const queue = [tree];
-
+    function bfs(node) {
+      const queue = [node];
       while (queue.length > 0) {
-        const currentNode = queue.shift();
-        console.log(currentNode.name); // 输出节点名称
-
-        if (currentNode.children && currentNode.children.length > 0) {
-          queue.push(...currentNode.children);
+        const cur = queue.shift();
+        console.log(cur.name);
+        if (cur.children && cur.children.length > 0) {
+          queue.push(...cur.children);
         }
       }
     }
-    bfs(tree)
+    bfs(tree);
   </script>
 </html>
