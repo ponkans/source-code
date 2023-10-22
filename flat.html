@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    const arr = [1, [2, 2, 3], 2, [33, [44, [55]]]];
+
+    function flatArr(arr, newArr) {
+      for (let item of arr) {
+        if (Array.isArray(item)) {
+          flatArr(item, newArr);
+        } else {
+          newArr.push(item);
+        }
+      }
+      return newArr;
+    }
+    const res = flatArr(arr, []);
+    debugger;
+
+    // function flat(arr) {
+    //   return arr.reduce((pre, item) => {
+    //     return pre.concat(Array.isArray(item) ? flat(item) : item);
+    //   }, []);
+    // }
+    // const res = flat(arr);
+  </script>
+</html>
