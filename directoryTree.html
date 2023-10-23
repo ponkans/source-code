@@ -31,13 +31,14 @@
         }
       }
 
-      return tree;
+      return tree
     }
 
     async function start() {
       try {
         const directoryHandle = await window.showDirectoryPicker();
         const directoryTree = await createDirectoryTree(directoryHandle);
+        debugger;
 
         console.log("Directory structure:");
         console.log(directoryTree);

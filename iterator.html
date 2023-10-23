@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    function Obj(value) {
+      this.value = value;
+      this.next = null;
+    }
+
+    const one = new Obj("head");
+    const two = { value: "two", next: null };
+    const three = { value: "three", next: null };
+
+    one.next = two;
+    two.next = three;
+
+    // 问题1：使用 for of 对 one 进行遍历，会有什么问题？
+    // 问题2：想办法进行改造，让 one 支持 for of 遍历
+
+    Obj.prototype[Symbol.iterator] = function () {
+      let p = this;
+      return {
+        next: () => {
+          if (p) {
+            const value = p.value;
+            p = p.next;
+            return {
+              done: false,
+              value,
+            };
+          }
+          return {
+            done: true,
+          };
+        },
+      };
+    };
+
+    for (let value of one) {
+      console.log(value);
+    }
+
+    const arr = [100, 200, 300, 400]
+
+    for (const [index, value] of arr.entries()) {
+      if (index === 1) {
+        continue
+      }
+      if (index === 2) {
+        break
+      }
+      console.log(value)
+    }
+  </script>
+</html>
