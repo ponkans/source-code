@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    const arr = [
+      "1.9",
+      "2.9.3",
+      "4.3.5",
+      "0.39999999999999.1",
+      "0.302.1",
+      "4.20.0",
+      "4.3.5.1",
+      "1.2.3.4.5",
+    ];
+    // 利用原生 sort 函数进行比较
+
+    function compare (a, b) {
+      debugger
+      const arr1 = a.split('.'); // [1, 9]
+      const arr2 = b.split('.'); // [2, 9, 3]
+
+      // 取出来挨个对比
+      let index = 0
+      while(true) {
+        const value1 = arr1[index]
+        const value2 = arr2[index]
+        index++
+
+        if (!value1 || !value2) {
+          return a.length - b.length
+        }
+
+        if (value1 === value2) {
+          continue
+        }
+
+        return value1 - value2
+      }
+    }
+
+    arr.sort((a, b) => compare(a, b))
+    console.log(arr)
+  </script>
+</html>
