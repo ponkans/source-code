@@ -12,15 +12,42 @@
     // 输出 { name: 'zongwei', age: '18' }
 
     function parseURLParameter(url) {
-      // 正则把 ？ 后面的匹出来
-      // 后面的根据 & 进行分割
-      // 然后组装 key value 形式
-      // 返回
+      const match = /[^?]*$/.exec(url)[0];
+      const result = {};
+      if (match) {
+        const arr = match.split("&");
+        for (const item of arr) {
+          const [key, value] = item.split("=");
+          if (key && value) {
+            result[key] = decodeURIComponent(value);
+          }
+        }
+      }
+      return result;
     }
+
+    function parseURLParameter2(url) {
+      return Object.fromEntries(new URL(url).searchParams.entries())
+    }
+
+    const res = parseURLParameter2("https://www.baidu.com?name=zongwei&age=18");
 
     // 实现instanceof
     // 如果A沿着原型链能找到B的prototype,那么 A instanceof B 为 true
+    function inst(a, b) {
+      let p = a
+      while(p) {
+        p = p.__proto__
+        if (p === b.prototype) {
+          return true
+        }
+      }
+      return false
+    }
+    const res2 = inst({}, Function)
+    debugger
 
     // 寄生组合式继承(es6 class 内部大概也是这样实现的)
+    
   </script>
 </html>
