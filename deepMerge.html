@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    function deepMerge(target, ...sources) {
+      if (!sources.length) return target;
+      const source = sources.shift();
+      if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+          if (isObject(source[key])) {
+            if (!target[key]) Object.assign(target, { [key]: {} });
+            deepMerge(target[key], source[key]);
+          } else {
+            Object.assign(target, { [key]: source[key] });
+          }
+        }
+      }
+      return deepMerge(target, ...sources);
+    }
+
+    function isObject(target) {
+      return Object.prototype.toString.call(target) === '[object, Object]';
+    }
+
+    const obj1 = { a: { b: 1 } };
+    const obj2 = { a: { c: 2 } };
+    const obj3 = { d: 3 };
+    const merged = deepMerge(obj1, obj2, obj3);
+  </script>
+</html>
