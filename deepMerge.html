@@ -7,29 +7,56 @@
   </head>
   <body></body>
   <script>
-    function deepMerge(target, ...sources) {
-      if (!sources.length) return target;
-      const source = sources.shift();
-      if (isObject(target) && isObject(source)) {
-        for (const key in source) {
-          if (isObject(source[key])) {
-            if (!target[key]) Object.assign(target, { [key]: {} });
-            deepMerge(target[key], source[key]);
-          } else {
-            Object.assign(target, { [key]: source[key] });
+    // deepMerge
+    const source = {
+      a: 123,
+      b: {
+        b1: 111,
+        b2: {
+          b21: 111,
+          b31: 111,
+        },
+      },
+    };
+    const target = {
+      a: 555,
+      b: {
+        b1: 555,
+        b2: {
+          b21: 555,
+          b22: 555,
+        },
+        b3: 555,
+      },
+    };
+    const target2 = {
+      a: 666,
+      b: {
+        b2: {
+          b22: 777,
+        },
+        b3: 777,
+      },
+    };
+
+    function mergeTwo(source, target) {
+      for (const [key, value] of Object.entries(target)) {
+        if (Object.prototype.toString.call(value) === "[object Object]") {
+          mergeTwo(source[key], value);
+        } else {
+          if (source.hasOwnProperty(key)) {
+            source[key] = value;
           }
         }
       }
-      return deepMerge(target, ...sources);
     }
+    mergeTwo(source, target);
 
-    function isObject(target) {
-      return Object.prototype.toString.call(target) === '[object, Object]';
+    function mergeMore(source, ...targetArr) {
+      for (let target of targetArr.values()) {
+        mergeTwo(source, target);
+      }
     }
-
-    const obj1 = { a: { b: 1 } };
-    const obj2 = { a: { c: 2 } };
-    const obj3 = { d: 3 };
-    const merged = deepMerge(obj1, obj2, obj3);
+    mergeMore(source, target, target2);
   </script>
 </html>
