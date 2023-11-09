@@ -10,31 +10,34 @@
     const source = {
       a: 123,
       b: [22, 33],
-      c: { name: 222, obj: { testArr: []  } },
+      c: { name: 222, obj: { testArr: [] } },
     };
 
+    const map = new WeakMap();
     function deepClone(source) {
-      if (typeof source === "number" || typeof source === "string") {
+      if (typeof source === "string" || typeof source === "number") {
         return source;
       }
 
-      if (Object.prototype.toString.call(source) === "[object Object]") {
-        let result = {};
-        // Object.keys 不会遍历原型上的属性
-        // 如果使用 for in，需要使用 source.hasOwnProperty(key) 进行过滤处理
-        Object.keys(source).forEach((key) => {
-          result[key] = deepClone(source[key]);
-        });
-
-        return result;
+      if (map.get(source)) {
+        return map.get(source);
       }
 
       if (Array.isArray(source)) {
-        let result = [];
-        source.forEach((item, index) => {
-          result[index] = deepClone(item);
-        });
+        const result = [];
+        map.set(source, result);
+        for (let [index, value] of source.entries()) {
+          result[index] = deepClone(value);
+        }
+        return result;
+      }
 
+      if (Object.prototype.toString.call(source) === "[object Object]") {
+        const result = {};
+        map.set(source, result);
+        for (let [key, value] of Object.entries(source)) {
+          result[key] = deepClone(value);
+        }
         return result;
       }
     }
