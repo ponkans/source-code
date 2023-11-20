@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  setTimeout(() => {
+    // 回调永远不会执行，因为主线程被死循环占用了
+    console.log('回调执行')
+  }, 3000);
+  while(true) {
+    console.log('主线程占用')
+  }
+</script>
+</html>
