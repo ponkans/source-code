@@ -1,42 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-  <script>
-    const middleware = async function (next) {
-      console.log(1);
-      await next();
-      console.log(6);
-    };
 
-    const middleware2 = async function (next) {
-      console.log(2);
-      await next();
-      console.log(5);
-    };
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-    const middleware3 = async function (next) {
-      console.log(3);
-      await next();
-      console.log(4);
-    };
+<body></body>
+<script>
+  const middleware = async function (next) {
+    console.log(1);
+    await next();
+    console.log(6);
+  };
 
-    function compose(middlewareArr) {
-      function dispatch(i) {
-        const fn = middlewareArr[i];
-        if (!fn) {
-          return Promise.resolve()
-        }
-        return Promise.resolve(fn(() => dispatch(i + 1)));
+  const middleware2 = async function (next) {
+    console.log(2);
+    await next();
+    console.log(5);
+  };
+
+  const middleware3 = async function (next) {
+    console.log(3);
+    await next();
+    console.log(4);
+  };
+
+  // function compose(middlewareArr) {
+  //   function dispatch(i) {
+  //     const fn = middlewareArr[i];
+  //     if (!fn) {
+  //       return Promise.resolve()
+  //     }
+  //     return Promise.resolve(fn(() => dispatch(i + 1)));
+  //   }
+  //   dispatch(0);
+  // }
+
+  function compose(middlewareArr) {
+    function dispatch(index) {
+      const fn = middlewareArr[index];
+      if (!fn) {
+        return Promise.resolve();
       }
-      dispatch(0);
+      return Promise.resolve(fn(() => dispatch(index + 1)));
     }
+    dispatch(0)
+  }
 
-    compose([middleware, middleware2, middleware3]);
-    // 1 2 3 4 5 6
-  </script>
+  compose([middleware, middleware2, middleware3]);
+  debugger
+  // 1 2 3 4 5 6
+</script>
+
 </html>

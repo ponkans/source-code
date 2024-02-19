@@ -29,5 +29,11 @@
     //   }, []);
     // }
     // const res = flat(arr);
+
+    function flat(arr) {
+      return arr.reduce((pre, item) => {
+        return pre.concat(Array.isArray(item) ? flat(item) : item)
+      }, [])
+    }
   </script>
 </html>
