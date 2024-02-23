@@ -11,7 +11,7 @@
     const testArr = [2, 1, 3, 4, 0, 20, 4, 70, 1];
 
     function quickSort(arr, low, high) {
-      if (low < high) {
+      if (low <= high) {
         // 找到分区点（pivot）的位置
         const pivotIndex = partition(arr, low, high);
 
@@ -22,20 +22,18 @@
     }
 
     function partition(arr, low, high) {
-      // 选择一个中间元素作为分区点
       const pivot = arr[high];
 
-      let preSlow = low - 1
-      let slow = preSlow;
-
+      // 双指针，切分数组
+      let slow = low;
       for (let fast = low; fast <= high; fast++) {
         if (arr[fast] <= pivot) {
-          slow++;
           swap(arr, slow, fast);
+          slow++;
         }
       }
 
-      return slow;
+      return slow - 1;
     }
 
     function swap(arr, i, j) {
