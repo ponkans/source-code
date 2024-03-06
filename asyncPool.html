@@ -1,49 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-  <script>
-    function asyncRequest(timeout) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          console.log(timeout);
-          resolve(timeout);
-        }, timeout);
-      });
-    }
 
-    // 异步任务队列
-    async function asyncPool(limit, iterable, iteratorFn) {
-      const all = [];
-      const quque = new Set();
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      for (let item of iterable) {
-        const task = Promise.resolve(iteratorFn(item))
-        all.push(task);
-        task.then(() => quque.delete(task))
-        quque.add(task);
-        if (quque.size >= limit) {
-          console.log("等待中", quque.size);
-          await Promise.race(quque);
-        }
+<body></body>
+<script>
+  function MyPromise() {
+  }
+
+  MyPromise.all = function (lists) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      let resArr = [];
+      for (let i = 0; i < lists.length; i++) {
+        lists[i].then((data) => {
+          count++;
+          resArr[i] = data;
+          if (count === lists.length) {
+            resolve(resArr)
+          }
+        }).catch(() => {
+          reject();
+        })
       }
+    })
+  }
 
-      return Promise.all(all);
+  MyPromise.race = function (lists) {
+    return new Promise((resolve, reject) => {
+      for (let pro of lists) {
+        pro.then(resolve).catch(reject);
+      }
+    })
+  }
+
+  function asyncRequest(timeout) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(timeout);
+        resolve(timeout);
+      }, timeout);
+    });
+  }
+
+  // 异步任务队列
+  async function asyncPool(limit, iterable, iteratorFn) {
+    const all = [];
+    const quque = new Set();
+
+    for (let item of iterable) {
+      const task = Promise.resolve(iteratorFn(item))
+      all.push(task);
+      task.then(() => quque.delete(task))
+      quque.add(task);
+      if (quque.size >= limit) {
+        console.log("等待中", quque.size);
+        // await Promise.race(quque);
+        await MyPromise.race(quque);
+      }
     }
 
-    async function start() {
-      const res = await asyncPool(
-        5,
-        [2000, 1000, 5000, 2000, 4000, 1000],
-        asyncRequest
-      );
-      console.log(res, "结束了");
-    }
+    // return Promise.all(all);
+    return MyPromise.all(all);
+  }
 
-    start();
-  </script>
+  async function start() {
+    const res = await asyncPool(
+      5,
+      [2000, 1000, 5000, 2000, 4000, 1000],
+      asyncRequest
+    );
+    console.log(res, "结束了");
+  }
+
+  start();
+</script>
+
 </html>

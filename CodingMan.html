@@ -11,54 +11,6 @@
 
 </body>
 <script>
-  // class CodingMan {
-  //   constructor(name) {
-  //     this.tasks = [];
-  //     this.name = name;
-  //     this.tasks.push(() => {
-  //       console.log(`Hi! This is ${this.name}!`);
-  //       this.next();
-  //     });
-  //     // schedule the first task to execute
-  //     setTimeout(() => {
-  //       this.next();
-  //     }, 0);
-  //   }
-
-  //   next() {
-  //     const task = this.tasks.shift();
-  //     task && task();
-  //   }
-
-  //   eat(meal) {
-  //     this.tasks.push(() => {
-  //       console.log(`Eat ${meal}!`);
-  //       this.next();
-  //     });
-  //     return this;
-  //   }
-
-  //   sleep(seconds) {
-  //     this.tasks.push(() => {
-  //       setTimeout(() => {
-  //         console.log(`Wake up after ${seconds} seconds!`);
-  //         this.next();
-  //       }, seconds * 1000);
-  //     });
-  //     return this;
-  //   }
-
-  //   sleepFirst(seconds) {
-  //     this.tasks.unshift(() => {
-  //       setTimeout(() => {
-  //         console.log(`Wake up after ${seconds} seconds!`);
-  //         this.next();
-  //       }, seconds * 1000);
-  //     });
-  //     return this;
-  //   }
-  // }
-
   class CodingMan {
     constructor(name) {
       this.name = name;

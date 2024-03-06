@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 找出连续最长字符串 -> 滑动窗口
+  // abcddddeefff
+  function find(str) {
+    let left  = 0, right = 0, max = 0, result = {};
+    while(right < str.length) {
+      if (str[right] !== str[left]) {
+        if ((right - left) > max) {
+          result = { char: str[left], startIndex: left, endIndex: right - 1 };
+        }
+        max = Math.max(max, right - left);
+        left = right;
+      }
+      right++;
+    }
+    return result;
+  }
+  console.log(find('abcddddeefff'))
+</script>
+</html>
