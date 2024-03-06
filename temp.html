@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 找出连续最⻓字符串： 'abcddddeefffrrrrrrrr' ==> {char: 'd', startIndex: 3, endIndex: 6}
+  function findMaxlLongStr(s) {
+    let maxInfo = {}, maxStrLen = 0;
+    let left = 0, right = 0;
+    while (right < s.length) {
+      // 更新左指针
+      if (s[left] !== s[right]) {
+        left = right;
+      }
+      // 每一个窗口判断，获取结果
+      if ((right - left + 1) > maxStrLen) {
+        maxInfo = { char: s[left], startInde: left, endIndex: right - 1 };
+        maxStrLen = right - left;
+      }
+      // 更新右指针
+      right++;
+    }
+    return maxInfo;
+  }
+  console.log(findMaxlLongStr('abcddddeefff'));
+
+  // "abcabcbb", 无重复字符的最长子串长度
+  function findMaxNoStr(s) {
+    let maxLen = 0;
+    let left = 0, right = 0, map = new Map();
+    while (right < s.length) {
+      // 更新左指针
+      if (map.has(s[right]) && map.get(s[right]) >= left) {
+        left = map.get(s[right]) + 1;
+      }
+      // // 每一个窗口判断，获取结果
+      map.set(s[right], right);
+      maxLen = Math.max(maxLen, right - left + 1);
+      // 更新右指针
+      right++;
+    }
+    return maxLen;
+  }
+
+  // "babad", 最长回文子串
+  function getMax(s, l, r) {
+    while (l >= 0 && r < s.length && s[l] === s[r]) {
+      l--;
+      r++;
+    }
+    return s.substring(l + 1, r);
+  }
+
+  function getMaxFStr() {
+    let maxStr = '';
+    for (let i = 0; i < s.length; i++) {
+      const str1 = getMax(s, i, i);
+      const str2 = getMax(s, i - 1, i);
+      maxStr = maxStr.length > str1.length ? maxStr : str1;
+      maxStr = maxStr.length > str2.length ? maxStr : str2;
+    }
+    return maxStr;
+  }
+
+  // 封装模板⽅法： template('{user.weight}kg', {user: {weight: 80, height: 180}}) ==> '80kg'
+  function template(str, data) {
+    return str.replace(/{(.+)}/, (match, key) => {
+      const keyArr = key.split('.');
+      let value = data;
+      for (let k of keyArr) {
+        value = value[k];
+      }
+      return value;
+    })
+  }
+
+  // 示例用法
+  var user = { weight: 80, height: 180 };
+  var result = template('{user.weight}kg', { user: user });
+  console.log(result); // 输出 '80kg'
+
+
+  // 解析 url 参数
+  // 输入 'https://www.baidu.com?name=zongwei&age=18'
+  // 输出 { name: 'zongwei', age: '18' }
+  function parseURL(path) {
+    const str = /[^?]*$/.exec(path)[0];
+    const strArr = str.split('&');
+    let res = {};
+    for (let item of strArr) {
+      const itemArr = item.split('=');
+      if (itemArr[0] && itemArr[1]) {
+        res[itemArr[0]] = decodeURIComponent(itemArr[1]);
+      }
+    }
+    return res;
+  }
+  console.log(parseURL('https://www.baidu.com?name=zongwei&age=18'))
+
+  // 实现数字的千位分隔符： 1234567.89 ==>'1,234,567.89'
+  function numberWithCommas(x) {
+    return String(x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  console.log(numberWithCommas(1234567.89)); // 输出: "1,234,567.89"
+
+  const middleware1 = async function (next) {
+    console.log(1);
+    await next();
+    console.log(6);
+  }
+
+  const middleware2 = async function (next) {
+    console.log(2);
+    await next();
+    console.log(5);
+  }
+
+  const middleware3 = async function (next) {
+    console.log(3);
+    await next();
+    console.log(4);
+  }
+
+  function compose(arr) {
+    let index = 0;
+    const dispatch = (index) => {
+      const fn = arr[index];
+      if (!fn) {
+        return Promise.resolve();
+      }
+      const next = () => dispatch(++index);
+      return Promise.resolve(fn(next));
+    }
+    dispatch(index);
+  }
+  // compose([middleware1, middleware2, middleware3]);
+
+  // promise 防抖，节流
+
+
+  class MyPromise {
+    constructor(callback) {
+      this.state = 'pending';
+      this.successQueue = [];
+      this.failQueue = [];
+
+      let resolve = (value) => {
+        if (this.state === 'pending') {
+          this.state = 'success';
+          this.value = value;
+          for (let successFn of this.successQueue) {
+            successFn();
+          }
+          this.successQueue = [];
+        }
+      }
+
+      let reject = (value) => {
+        if (this.state === 'pending') {
+          this.state = 'fail';
+          this.value = value;
+          for (let failFn of this.failQueue) {
+            failFn();
+          }
+          this.failQueue = [];
+        }
+      }
+
+      try {
+        callback(resolve, reject);
+      } catch (err) {
+        reject();
+      }
+    }
+
+    then(onSuccess, onFail) {
+      let x;
+      let promise2 = new MyPromise((resolve, reject) => {
+        if (this.state === 'pending') {
+          this.successQueue.push(() => {
+            resolve(onSuccess(this.value))
+          });
+          return;
+        }
+        if (this.state === 'success') {
+          resolve(onSuccess(this.value))
+        } else if (this.state === 'fail') {
+          reject(onFail(this.value));
+        }
+      });
+      return promise2;
+    }
+  }
+
+  function testPromise() {
+    let promise = new MyPromise((resolve, reject) => {
+      const random = Math.random() * 10;
+      if (random > 0) {
+        setTimeout(() => {
+          resolve(444);
+        }, 1000)
+      } else {
+        reject(333);
+      }
+    })
+    return promise;
+  }
+  const temp = testPromise();
+  temp.then((data) => {
+    console.log('success', data);
+    return 'nextdata'
+  }, (err) => console.log('fail'))
+    .then((data) => {
+      console.log('递归', data);
+    })
+
+  // 判断左右括号「{ & ( & [」是否匹配
+  // a[{(bc)}]def ==> true   [{()}]
+  // a{(bc)}]def ==> false
+  // a(b}c ==> false
+
+  function isMatch(str) {
+    const map = {
+      '[': ']',
+      ']': '[',
+      '{': '}',
+      '}': '{',
+      '(': ')',
+      ')': '('
+    };
+    const stack = [];
+    for (let item of str) {
+      if (!map[item]) {
+        continue;
+      }
+      const top = stack[stack.length - 1];
+      if (map[top] === item) {
+        stack.pop();
+      } else {
+        stack.push(item);
+      }
+    }
+    return stack.length === 0;
+  }
+  console.log(isMatch('a[{(bc)}]def'))
+  console.log(isMatch('a{(bc)}]def'))
+  console.log(isMatch('a(b}c'))
+
+  // 动态路由参数匹配： /user/:userId + /user/123 ==> {userId: 123}
+  function dyMatch(rule, str) {
+
+  }
+  console.log(dyMatch('/user/:userId/:name', '/user/123/zongwei'));
+
+  // memorized 函数 + LRU 缓存策略
+  // LRU: 最近最少使用，维护一个 map
+  class LRUCache {
+    constructor(limit) {
+      this.limit = limit;
+      this.cache = new Map();
+    }
+
+    has(key) {
+      return this.cache.has(key);
+    }
+
+    get(key) {
+      if (!this.cache.has(key)) {
+        return;
+      }
+      const value = this.cache.get(key);
+      this.cache.delete(key);
+      this.cache.set(key, value);
+      return value;
+    }
+
+    put(key, value) {
+      if (this.cache.has(key)) {
+        this.cache.delete(key);
+      }
+      if (this.cache.size >= this.limit) {
+        const oldKey = this.cache.keys().next().value;
+        this.cache.delete(oldKey);
+      }
+      this.cache.set(key, value);
+    }
+  }
+
+  function memoizedFunction(fn, limit) {
+    const LRUCacheIns = new LRUCache(limit);
+
+    return function (...args) {
+      const key = JSON.stringify(args);
+
+      if (LRUCacheIns.has(key)) {
+        console.log('缓存中获取');
+        return LRUCacheIns.get(key);
+      }
+
+      const value = fn.apply(this, args);
+      LRUCacheIns.put(key, value);
+      return value;
+    }
+  }
+
+  function add(a, b) {
+    return a + b;
+  }
+
+  const mFn = memoizedFunction(add, 3);
+  console.log(mFn(3, 4));
+  console.log(mFn(3, 4))
+
+  // ⾃⼰实现 EventBus 函数，⽅法包括：on、once、emit、off
+  class EventBus {
+    constructor() {
+      this.listeners = {};
+    }
+
+    on(event, callback) {
+      this.listeners[event] = this.listeners[event] || [];
+      this.listeners[event].push(callback);
+    }
+
+    once(event, callback) {
+      const onceCallback = (...args) => {
+        callback(...args);
+        this.off(event, onceCallback);
+      }
+      this.on(event, onceCallback);
+    }
+
+    emit(event, ...args) {
+      if (!this.listeners[event]) {
+        return;
+      }
+      this.listeners[event].forEach((callback) => {
+        callback(...args);
+      });
+    }
+
+    off(event, callback) {
+      if (!this.listeners[event]) {
+        return;
+      }
+      const offIndex = this.listeners[event].indexOf(callback);
+      if (offIndex !== -1) {
+        this.listeners[event].splice(offIndex, 1);
+      }
+    }
+  }
+
+  // 使用示例
+  const bus = new EventBus();
+  bus.once('test', (data) => console.log(data));
+  bus.emit('test', 888);
+  bus.emit('test', 999);
+
+  // 防抖，节流
+  function debounce(fn, delay, runFirst) {
+    let timeoutId;
+    let hasRun = false;
+
+    return function (...args) {
+      if (runFirst && !hasRun) {
+        fn.apply(this, args);
+        hasRun = true;
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        fn.apply(this, args);
+        timeoutId = null;
+        hasRun = false;
+      }, delay)
+    }
+  }
+
+  const debouncedFunction = debounce(() => {
+    console.log('执行了防抖函数');
+  }, 2000);
+
+  // 连续触发，但只有最后一次触发后延时结束才会执行函数
+  debouncedFunction();
+  debouncedFunction();
+  debouncedFunction();
+  // 等待 200ms 后输出: 执行了防抖函数
+
+  // 节流：按照固定频率运行，通过时间差来实现
+  function throttle(fn, delay) {
+    let timeoutId;
+
+    return function (...args) {
+      if (timeoutId) {
+        return;
+      }
+      timeoutId = setTimeout(() => {
+        fn.apply(this, args);
+        timeoutId = null;
+      }, delay)
+    }
+  }
+</script>
+
+</html>
