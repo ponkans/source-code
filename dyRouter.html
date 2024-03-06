@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    //动态路由参数匹配 /user/:userId/:name + /user/123/zongwei ==> {userId: 123}
+    function dyMathc(rule, str) {
+      const ruleArr = rule.split("/");
+      const strArr = str.split("/");
+      
+      if (ruleArr.length !== strArr.length) return {};
+
+      let res = {};
+      for (let [index, item] of ruleArr.entries()) {
+        if (item.startsWith(":")) {
+          const key = item.slice(1);
+          const value = strArr[index];
+          res[key] = value;
+        }
+      }
+
+      return res;
+    }
+    console.log(dyMathc("/user/:userId/:name/", "/user/123/zongwei/"));
+  </script>
+</html>

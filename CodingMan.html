@@ -1,119 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
+  <body></body>
+  <script>
+    // class CodingMan {
+    //   constructor(name) {
+    //     this.tasks = [];
+    //     this.name = name;
+    //     this.tasks.push(() => {
+    //       console.log(`Hi! This is ${this.name}!`);
+    //       this.next();
+    //     });
+    //     // schedule the first task to execute
+    //     setTimeout(() => {
+    //       this.next();
+    //     }, 0);
+    //   }
 
-<body>
+    //   next() {
+    //     const task = this.tasks.shift();
+    //     task && task();
+    //   }
 
-</body>
-<script>
-  // class CodingMan {
-  //   constructor(name) {
-  //     this.tasks = [];
-  //     this.name = name;
-  //     this.tasks.push(() => {
-  //       console.log(`Hi! This is ${this.name}!`);
-  //       this.next();
-  //     });
-  //     // schedule the first task to execute
-  //     setTimeout(() => {
-  //       this.next();
-  //     }, 0);
-  //   }
+    //   eat(meal) {
+    //     this.tasks.push(() => {
+    //       console.log(`Eat ${meal}!`);
+    //       this.next();
+    //     });
+    //     return this;
+    //   }
 
-  //   next() {
-  //     const task = this.tasks.shift();
-  //     task && task();
-  //   }
+    //   sleep(seconds) {
+    //     this.tasks.push(() => {
+    //       setTimeout(() => {
+    //         console.log(`Wake up after ${seconds} seconds!`);
+    //         this.next();
+    //       }, seconds * 1000);
+    //     });
+    //     return this;
+    //   }
 
-  //   eat(meal) {
-  //     this.tasks.push(() => {
-  //       console.log(`Eat ${meal}!`);
-  //       this.next();
-  //     });
-  //     return this;
-  //   }
+    //   sleepFirst(seconds) {
+    //     this.tasks.unshift(() => {
+    //       setTimeout(() => {
+    //         console.log(`Wake up after ${seconds} seconds!`);
+    //         this.next();
+    //       }, seconds * 1000);
+    //     });
+    //     return this;
+    //   }
+    // }
 
-  //   sleep(seconds) {
-  //     this.tasks.push(() => {
-  //       setTimeout(() => {
-  //         console.log(`Wake up after ${seconds} seconds!`);
-  //         this.next();
-  //       }, seconds * 1000);
-  //     });
-  //     return this;
-  //   }
+    // class CodingMan {
+    //   constructor(name) {
+    //     this.name = name;
+    //     this.task = [() => {
+    //       console.log(`this is ${this.name}`);
+    //       this.next();
+    //     }];
+    //     setTimeout(() => {
+    //       this.next();
+    //     }, 0)
+    //   }
 
-  //   sleepFirst(seconds) {
-  //     this.tasks.unshift(() => {
-  //       setTimeout(() => {
-  //         console.log(`Wake up after ${seconds} seconds!`);
-  //         this.next();
-  //       }, seconds * 1000);
-  //     });
-  //     return this;
-  //   }
-  // }
+    //   next() {
+    //     const task = this.task.shift();
+    //     task && task();
+    //   }
 
-  class CodingMan {
-    constructor(name) {
-      this.name = name;
-      this.task = [() => {
-        console.log(`this is ${this.name}`);
-        this.next();
-      }];
-      setTimeout(() => {
-        this.next();
-      }, 0)
-    }
+    //   eat(meal) {
+    //     this.task.push(() => {
+    //       console.log(`${this.name} eat ${meal}`);
+    //       this.next();
+    //     })
+    //     return this;
+    //   }
 
-    next() {
-      const task = this.task.shift();
-      task && task();
-    }
+    //   sleep(seconds) {
+    //     this.task.push(() => {
+    //       setTimeout(() => {
+    //         console.log(`${this.name} sleep ${seconds}`)
+    //         this.next();
+    //       }, seconds * 1000)
+    //     })
+    //     return this;
+    //   }
 
-    eat(meal) {
-      this.task.push(() => {
-        console.log(`${this.name} eat ${meal}`);
-        this.next();
-      })
-      return this;
-    }
+    //   sleepFirst(seconds) {
+    //     this.task.unshift(() => {
+    //       setTimeout(() => {
+    //         console.log(`${this.name} sleep ${seconds}`)
+    //         this.next();
+    //       }, seconds * 1000)
+    //     })
+    //     return this;
+    //   }
+    // }
 
-    sleep(seconds) {
-      this.task.push(() => {
+    // Test
+    
+
+    // 任务队列，所有任务添加完成后，从队头开始执行, 执行完一个，next -> 执行后面一个
+    class CodingMan {
+      constructor(name) {
+        this.name = name;
+        this.queue = [
+          () => {
+            console.log(`I am ${this.name}`);
+          },
+        ];
         setTimeout(() => {
-          console.log(`${this.name} sleep ${seconds}`)
-          this.next();
-        }, seconds * 1000)
-      })
-      return this;
+          this.run();
+        }, 0);
+      }
+
+      async run() {
+        for (let task of this.queue) {
+          await task();
+        }
+      }
+
+      eat(food) {
+        this.queue.push(() => {
+          console.log(`${this.name} eat ${food}`);
+        });
+        return this;
+      }
+
+      sleep(second) {
+        this.queue.push(() => {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              console.log('sleep', second);
+              resolve(second);
+            }, 1000 * second);
+          });
+        });
+        return this;
+      }
+
+      sleepFirst(second) {
+        this.queue.unshift(() => {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              console.log('sleepFirst', second);
+              resolve(second);
+            }, 1000 * second);
+          });
+        });
+        return this;
+      }
     }
 
-    sleepFirst(seconds) {
-      this.task.unshift(() => {
-        setTimeout(() => {
-          console.log(`${this.name} sleep ${seconds}`)
-          this.next();
-        }, seconds * 1000)
-      })
-      return this;
-    }
-  }
-
-  // Test
-  new CodingMan('CodingMan')
-    .eat('dinner')
-    .sleep(2)
-    .sleepFirst(1)
-    .eat('breakfast');
-
-
-
-</script>
-
+    new CodingMan("CodingMan")
+      .eat("dinner")
+      .sleep(2)
+      .sleepFirst(1)
+      .eat("breakfast");
+  </script>
 </html>
