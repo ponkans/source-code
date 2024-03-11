@@ -228,22 +228,16 @@
   // a{(bc)}]def ==> false
   // a(b}c ==> false
 
-  function isMatch(str) {
+  function isMatch(s) {
     const map = {
-      '[': ']',
       ']': '[',
-      '{': '}',
       '}': '{',
-      '(': ')',
       ')': '('
     };
     const stack = [];
-    for (let item of str) {
-      if (!map[item]) {
-        continue;
-      }
+    for (let item of s) {
       const top = stack[stack.length - 1];
-      if (map[top] === item) {
+      if (top && top === map[item]) {
         stack.pop();
       } else {
         stack.push(item);
@@ -251,6 +245,7 @@
     }
     return stack.length === 0;
   }
+  console.log(isMatch('()'), '______________________kk');
   console.log(isMatch('a[{(bc)}]def'))
   console.log(isMatch('a{(bc)}]def'))
   console.log(isMatch('a(b}c'))
