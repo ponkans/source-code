@@ -12,17 +12,17 @@
       b: [22, 33],
       c: { name: 222, obj: { testArr: [] } },
     };
+    source['d'] = source;
 
+    // 输入 source，返回深克隆后的对象
     const map = new WeakMap();
     function deepClone(source) {
-      if (typeof source === "string" || typeof source === "number") {
+      if (typeof source === 'number' || typeof source === 'string') {
         return source;
       }
-
-      if (map.get(source)) {
+      if (map.has(source)) {
         return map.get(source);
       }
-
       if (Array.isArray(source)) {
         const result = [];
         map.set(source, result);
@@ -31,8 +31,7 @@
         }
         return result;
       }
-
-      if (Object.prototype.toString.call(source) === "[object Object]") {
+      if (Object.prototype.toString.call(source) === '[object Object]') {
         const result = {};
         map.set(source, result);
         for (let [key, value] of Object.entries(source)) {
@@ -42,6 +41,7 @@
       }
     }
 
-    let target = deepClone(source);
+    const clone = deepClone(source);
+    debugger
   </script>
 </html>
