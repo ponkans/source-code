@@ -21,8 +21,8 @@
         left = right;
       }
       // 每一个窗口判断，获取结果
-      if ((right - left + 1) > maxStrLen) {
-        maxInfo = { char: s[left], startInde: left, endIndex: right - 1 };
+      if ((right - left) > maxStrLen) {
+        maxInfo = { char: s[left], startInde: left, endIndex: right };
         maxStrLen = right - left;
       }
       // 更新右指针
@@ -31,24 +31,25 @@
     return maxInfo;
   }
   console.log(findMaxlLongStr('abcddddeefff'));
+  console.log(findMaxlLongStr('abcddddeefffhhhhhhhhhhhhhh'));
 
-  // "abcabcbb", 无重复字符的最长子串长度
+  // "abcaxyubcbb", 无重复字符的最长子串长度
   function findMaxNoStr(s) {
-    let maxLen = 0;
-    let left = 0, right = 0, map = new Map();
+    let left = 0, right = 0;
+    let maxLen = 0, map = new Map();
+
     while (right < s.length) {
-      // 更新左指针
       if (map.has(s[right]) && map.get(s[right]) >= left) {
-        left = map.get(s[right]) + 1;
+        left++;
       }
-      // // 每一个窗口判断，获取结果
       map.set(s[right], right);
       maxLen = Math.max(maxLen, right - left + 1);
-      // 更新右指针
       right++;
     }
+
     return maxLen;
   }
+  console.log(findMaxNoStr('abcaxyubcbb'), 'findMaxNoStr');
 
   // "babad", 最长回文子串
   function getMax(s, l, r) {
@@ -92,7 +93,7 @@
   // 输入 'https://www.baidu.com?name=zongwei&age=18'
   // 输出 { name: 'zongwei', age: '18' }
   function parseURL(path) {
-    const str = /[^?]*$/.exec(path)[0];
+    const str = path.match(/[^?]*$/g)[0];
     const strArr = str.split('&');
     let res = {};
     for (let item of strArr) {
@@ -107,7 +108,7 @@
 
   // 实现数字的千位分隔符： 1234567.89 ==>'1,234,567.89'
   function numberWithCommas(x) {
-    return String(x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g, ',');
+    return String(x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g, ',')
   }
 
   console.log(numberWithCommas(1234567.89)); // 输出: "1,234,567.89"
@@ -150,54 +151,51 @@
   class MyPromise {
     constructor(callback) {
       this.state = 'pending';
+      this.value = '';
       this.successQueue = [];
-      this.failQueue = [];
-
-      let resolve = (value) => {
-        if (this.state === 'pending') {
-          this.state = 'success';
-          this.value = value;
-          for (let successFn of this.successQueue) {
-            successFn();
-          }
-          this.successQueue = [];
-        }
-      }
-
-      let reject = (value) => {
-        if (this.state === 'pending') {
-          this.state = 'fail';
-          this.value = value;
-          for (let failFn of this.failQueue) {
-            failFn();
-          }
-          this.failQueue = [];
-        }
-      }
 
       try {
-        callback(resolve, reject);
-      } catch (err) {
-        reject();
+        callback(this.resolve, this.reject)
+      } catch (error) {
+        this.reject(error);
       }
     }
 
-    then(onSuccess, onFail) {
-      let x;
-      let promise2 = new MyPromise((resolve, reject) => {
+    resolve = (value) => {
+      if (this.state === 'pending') {
+        this.state = 'success';
+        this.value = value;
+        for (let successFn of this.successQueue) {
+          successFn();
+        }
+      }
+    }
+
+    reject = (value) => {
+      if (this.state === 'pending') {
+        this.state = 'fail';
+        this.value = value;
+      }
+    }
+
+    then = (onSuccess, onFail) => {
+      const newPromise = new MyPromise((resolve, reject) => {
         if (this.state === 'pending') {
           this.successQueue.push(() => {
-            resolve(onSuccess(this.value))
+            resolve(onSuccess(this.value));
           });
           return;
         }
         if (this.state === 'success') {
           resolve(onSuccess(this.value))
-        } else if (this.state === 'fail') {
-          reject(onFail(this.value));
+          return;
+        }
+        if (this.state === 'fail') {
+          resolve(onFail(this.value));
+          return;
         }
       });
-      return promise2;
+      return newPromise;
     }
   }
 
@@ -229,32 +227,33 @@
   // a(b}c ==> false
 
   function isMatch(s) {
-    const map = {
-      ']': '[',
-      '}': '{',
-      ')': '('
-    };
     const stack = [];
+    const map = {
+      ')': '(',
+      ']': '[',
+      '}': '{'
+    }
     for (let item of s) {
-      const top = stack[stack.length - 1];
-      if (top && top === map[item]) {
-        stack.pop();
-      } else {
+      // 左括号
+      if (Object.values(map).includes(item)) {
         stack.push(item);
+        continue;
+      }
+      // 右括号
+      if (map[item]) {
+        const top = stack.pop();
+        if (top !== map[item]) {
+          return false;
+        }
       }
     }
     return stack.length === 0;
   }
+
   console.log(isMatch('()'), '______________________kk');
   console.log(isMatch('a[{(bc)}]def'))
   console.log(isMatch('a{(bc)}]def'))
   console.log(isMatch('a(b}c'))
-
-  // 动态路由参数匹配： /user/:userId + /user/123 ==> {userId: 123}
-  function dyMatch(rule, str) {
-
-  }
-  console.log(dyMatch('/user/:userId/:name', '/user/123/zongwei'));
 
   // memorized 函数 + LRU 缓存策略
   // LRU: 最近最少使用，维护一个 map
@@ -269,7 +268,7 @@
     }
 
     get(key) {
-      if (!this.cache.has(key)) {
+      if (!this.has(key)) {
         return;
       }
       const value = this.cache.get(key);
@@ -279,7 +278,7 @@
     }
 
     put(key, value) {
-      if (this.cache.has(key)) {
+      if (this.has(key)) {
         this.cache.delete(key);
       }
       if (this.cache.size >= this.limit) {
@@ -295,15 +294,11 @@
 
     return function (...args) {
       const key = JSON.stringify(args);
-
       if (LRUCacheIns.has(key)) {
-        console.log('缓存中获取');
         return LRUCacheIns.get(key);
       }
-
       const value = fn.apply(this, args);
       LRUCacheIns.put(key, value);
-      return value;
     }
   }
 
@@ -327,29 +322,24 @@
     }
 
     once(event, callback) {
-      const onceCallback = (...args) => {
-        callback(...args);
-        this.off(event, onceCallback);
+      this.listeners[event] = this.listeners[event] || [];
+      const newCallback = (...args) => {
+        callback.apply(this, args);
+        this.off(event, newCallback);
       }
-      this.on(event, onceCallback);
+      this.on(event, newCallback);
     }
 
     emit(event, ...args) {
-      if (!this.listeners[event]) {
-        return;
-      }
-      this.listeners[event].forEach((callback) => {
-        callback(...args);
+      (this.listeners[event] || []).forEach(item => {
+        item.apply(this, args);
       });
     }
 
     off(event, callback) {
-      if (!this.listeners[event]) {
-        return;
-      }
-      const offIndex = this.listeners[event].indexOf(callback);
-      if (offIndex !== -1) {
-        this.listeners[event].splice(offIndex, 1);
+      const findIndex = (this.listeners[event] || []).indexOf(callback);
+      if (findIndex !== -1) {
+        this.listeners[event].splice(findIndex, 1);
       }
     }
   }
@@ -362,28 +352,29 @@
 
   // 防抖，节流
   function debounce(fn, delay, runFirst) {
-    let timeoutId;
+    let timeId;
     let hasRun = false;
 
     return function (...args) {
-      if (runFirst && !hasRun) {
-        fn.apply(this, args);
+      if (!hasRun && runFirst) {
         hasRun = true;
-      }
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(() => {
         fn.apply(this, args);
-        timeoutId = null;
+        return;
+      }
+      if (timeId) {
+        clearTimeout(timeId);
+      }
+      timeId = setTimeout(() => {
+        fn.apply(this, args);
+        timeId = null;
         hasRun = false;
-      }, delay)
+      }, delay);
     }
   }
 
   const debouncedFunction = debounce(() => {
     console.log('执行了防抖函数');
-  }, 2000);
+  }, 2000, true);
 
   // 连续触发，但只有最后一次触发后延时结束才会执行函数
   debouncedFunction();
@@ -393,16 +384,16 @@
 
   // 节流：按照固定频率运行，通过时间差来实现
   function throttle(fn, delay) {
-    let timeoutId;
+    let timeId;
 
-    return function (...args) {
-      if (timeoutId) {
+    return function() {
+      if (timeId) {
         return;
       }
-      timeoutId = setTimeout(() => {
+      timeId = ((...args) => {
         fn.apply(this, args);
-        timeoutId = null;
-      }, delay)
+        timeId = null;
+      }, delay);
     }
   }
 </script>

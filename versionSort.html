@@ -22,20 +22,19 @@
     function compare(a, b) {
       const arr1 = a.split('.');
       const arr2 = b.split('.');
-      const maxLen = Math.max(arr1.length, arr2.length);
       let index = 0;
-      while(index < maxLen) {
-        const item1 = arr1[index];
-        const item2 = arr2[index];
+      while(true) {
+        const value1 = arr1[index];
+        const value2 = arr2[index];
         index++;
-        if (item1 === undefined || item2 === undefined) {
+        if (value1 === undefined || value2 === undefined) {
           return arr1.length - arr2.length;
         }
-        if (item1 === item2) {
+        if (value1 === value2) {
           continue;
         }
-        return item1 - item2;
-      } 
+        return Number(value1) - Number(value2);
+      }
     }
 
     arr.sort((a, b) => compare(a, b));

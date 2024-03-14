@@ -29,19 +29,17 @@
   // };
 
   function rec(preKey, value, result) {
-    if (typeof value === "number" || typeof value === "string" || typeof value === "boolean") {
+    if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
       result[preKey] = value;
     }
-
     if (Array.isArray(value)) {
-      for (let [index, target] of value.entries()) {
-        rec(`${preKey}[${index}]`, target, result);
+      for (let [index, arrValue] of value.entries()) {
+        rec(`${preKey}[${index}]`, arrValue, result);
       }
     }
-
     if (Object.prototype.toString.call(value) === "[object Object]") {
-      for (let [key, target] of Object.entries(value)) {
-        rec(`${preKey}.${key}`, target, result);
+      for (let [key, objValue] of Object.entries(value)) {
+        rec(`${preKey}.${key}`, objValue, result);
       }
     }
   }
