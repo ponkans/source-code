@@ -13,31 +13,29 @@
 <script>
   // 找出连续最⻓字符串： 'abcddddeefffrrrrrrrr' ==> {char: 'd', startIndex: 3, endIndex: 6}
   function findMaxlLongStr(s) {
-    let maxInfo = {}, maxStrLen = 0;
     let left = 0, right = 0;
-    while (right < s.length) {
-      // 更新左指针
-      if (s[left] !== s[right]) {
+    let maxInfo = {}, maxLen = 0;
+    while(right < s.length) {
+      if (s[right] !== s[left]) {
         left = right;
       }
-      // 每一个窗口判断，获取结果
-      if ((right - left) > maxStrLen) {
-        maxInfo = { char: s[left], startInde: left, endIndex: right };
-        maxStrLen = right - left;
+      if (right - left + 1 > maxLen) {
+        maxLen = right - left + 1;
+        maxInfo = { char: s[left], startIndex: left, endIndex: right }
       }
-      // 更新右指针
       right++;
     }
     return maxInfo;
   }
-  console.log(findMaxlLongStr('abcddddeefff'));
+  console.log(findMaxlLongStr('abcddddeefff'), '___最长连续');
   console.log(findMaxlLongStr('abcddddeefffhhhhhhhhhhhhhh'));
 
   // "abcaxyubcbb", 无重复字符的最长子串长度
   function findMaxNoStr(s) {
-   let maxLen = 0;
-    let left = 0, right = 0, map = new Map();
-    while(right < s.length) {
+    let maxLen = 0;
+    const map = new Map();
+    let left = 0, right = 0;
+    while (right < s.length) {
       if (map.has(s[right]) && map.get(s[right]) >= left) {
         left = map.get(s[right]) + 1;
       }
@@ -58,7 +56,7 @@
     return s.substring(l + 1, r);
   }
 
-  function getMaxFStr() {
+  function getMaxFStr(s) {
     let maxStr = '';
     for (let i = 0; i < s.length; i++) {
       const str1 = getMax(s, i, i);
@@ -71,19 +69,18 @@
 
   // 封装模板⽅法： template('{user.weight}kg', {user: {weight: 80, height: 180}}) ==> '80kg'
   function template(str, data) {
-    return str.replace(/{(.+)}/, (match, key) => {
-      const keyArr = key.split('.');
-      let value = data;
-      for (let k of keyArr) {
-        value = value[k];
+    return str.replace(/{(.+)}/g, (value1, value2) => {
+      const keyArr = value2.split('.');
+      let res = data;
+      for (let key of keyArr) {
+        res = res[key];
       }
-      return value;
+      return res;
     })
   }
 
   // 示例用法
-  var user = { weight: 80, height: 180 };
-  var result = template('{user.weight}kg', { user: user });
+  var result = template('{user.weight}kg', { user: { weight: 80, height: 180 } });
   console.log(result); // 输出 '80kg'
 
 
@@ -93,59 +90,25 @@
   function parseURL(path) {
     const str = path.match(/[^?]*$/g)[0];
     const strArr = str.split('&');
-    let res = {};
+    const result = {};
     for (let item of strArr) {
-      const itemArr = item.split('=');
-      if (itemArr[0] && itemArr[1]) {
-        res[itemArr[0]] = decodeURIComponent(itemArr[1]);
+      const [key, value] = item.split('=');
+      if (key && value) {
+        result[key] = decodeURIComponent(value);
       }
     }
-    return res;
+    return result;
   }
   console.log(parseURL('https://www.baidu.com?name=zongwei&age=18'))
 
   // 实现数字的千位分隔符： 1234567.89 ==>'1,234,567.89'
   function numberWithCommas(x) {
-    return String(x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g, ',')
+    return String(x).replace(/(?<=\d)(?=(\d{3})+(?!\d))/g, '.')
   }
 
   console.log(numberWithCommas(1234567.89)); // 输出: "1,234,567.89"
 
-  const middleware1 = async function (next) {
-    console.log(1);
-    await next();
-    console.log(6);
-  }
-
-  const middleware2 = async function (next) {
-    console.log(2);
-    await next();
-    console.log(5);
-  }
-
-  const middleware3 = async function (next) {
-    console.log(3);
-    await next();
-    console.log(4);
-  }
-
-  function compose(arr) {
-    let index = 0;
-    const dispatch = (index) => {
-      const fn = arr[index];
-      if (!fn) {
-        return Promise.resolve();
-      }
-      const next = () => dispatch(++index);
-      return Promise.resolve(fn(next));
-    }
-    dispatch(index);
-  }
-  // compose([middleware1, middleware2, middleware3]);
-
-  // promise 防抖，节流
-
-
+  // promise
   class MyPromise {
     constructor(callback) {
       this.state = 'pending';
@@ -232,12 +195,10 @@
       '}': '{'
     }
     for (let item of s) {
-      // 左括号
       if (Object.values(map).includes(item)) {
         stack.push(item);
         continue;
       }
-      // 右括号
       if (map[item]) {
         const top = stack.pop();
         if (top !== map[item]) {
@@ -248,7 +209,7 @@
     return stack.length === 0;
   }
 
-  console.log(isMatch('()'), '______________________kk');
+  console.log(isMatch('()'), '______________________kk---');
   console.log(isMatch('a[{(bc)}]def'))
   console.log(isMatch('a{(bc)}]def'))
   console.log(isMatch('a(b}c'))
@@ -258,45 +219,47 @@
   class LRUCache {
     constructor(limit) {
       this.limit = limit;
-      this.cache = new Map();
+      this.map = new Map();
     }
 
     has(key) {
-      return this.cache.has(key);
+      return this.map.has(key);
     }
 
     get(key) {
       if (!this.has(key)) {
         return;
       }
-      const value = this.cache.get(key);
-      this.cache.delete(key);
-      this.cache.set(key, value);
+      const value = this.map.get(key);
+      this.map.delete(key);
+      this.map.set(key, value);
       return value;
     }
 
     put(key, value) {
       if (this.has(key)) {
-        this.cache.delete(key);
+        this.map.delete(key);
       }
-      if (this.cache.size >= this.limit) {
-        const oldKey = this.cache.keys().next().value;
-        this.cache.delete(oldKey);
+      if (this.map.size >= this.limit) {
+        const oldKey = this.map.keys().next().value;
+        console.log('超出limit');
+        this.map.delete(oldKey);
       }
-      this.cache.set(key, value);
+      this.map.set(key, value);
     }
   }
 
   function memoizedFunction(fn, limit) {
     const LRUCacheIns = new LRUCache(limit);
 
-    return function (...args) {
+    return function(...args) {
       const key = JSON.stringify(args);
       if (LRUCacheIns.has(key)) {
         return LRUCacheIns.get(key);
       }
       const value = fn.apply(this, args);
       LRUCacheIns.put(key, value);
+      return value;
     }
   }
 
@@ -305,67 +268,23 @@
   }
 
   const mFn = memoizedFunction(add, 3);
-  console.log(mFn(3, 4));
-  console.log(mFn(3, 4))
-
-  // ⾃⼰实现 EventBus 函数，⽅法包括：on、once、emit、off
-  class EventBus {
-    constructor() {
-      this.listeners = {};
-    }
-
-    on(event, callback) {
-      this.listeners[event] = this.listeners[event] || [];
-      this.listeners[event].push(callback);
-    }
-
-    once(event, callback) {
-      this.listeners[event] = this.listeners[event] || [];
-      const newCallback = (...args) => {
-        callback.apply(this, args);
-        this.off(event, newCallback);
-      }
-      this.on(event, newCallback);
-    }
-
-    emit(event, ...args) {
-      (this.listeners[event] || []).forEach(item => {
-        item.apply(this, args);
-      });
-    }
-
-    off(event, callback) {
-      const findIndex = (this.listeners[event] || []).indexOf(callback);
-      if (findIndex !== -1) {
-        this.listeners[event].splice(findIndex, 1);
-      }
-    }
-  }
-
-  // 使用示例
-  const bus = new EventBus();
-  bus.once('test', (data) => console.log(data));
-  bus.emit('test', 888);
-  bus.emit('test', 999);
+  console.log(mFn(3, 4), '_mmmmm');
+  console.log(mFn(3, 5))
+  console.log(mFn(3, 6))
+  console.log(mFn(3, 7))
+  console.log(mFn(3, 89))
 
   // 防抖，节流
   function debounce(fn, delay, runFirst) {
-    let timeId;
-    let hasRun = false;
+    let timeId = null;
 
     return function (...args) {
-      if (!hasRun && runFirst) {
-        hasRun = true;
-        fn.apply(this, args);
-        return;
-      }
       if (timeId) {
         clearTimeout(timeId);
       }
       timeId = setTimeout(() => {
         fn.apply(this, args);
         timeId = null;
-        hasRun = false;
       }, delay);
     }
   }
@@ -382,13 +301,13 @@
 
   // 节流：按照固定频率运行，通过时间差来实现
   function throttle(fn, delay) {
-    let timeId;
+    let timeId = null;
 
-    return function() {
+    return function(...args) {
       if (timeId) {
         return;
       }
-      timeId = ((...args) => {
+      timeId = setTimeout(() => {
         fn.apply(this, args);
         timeId = null;
       }, delay);

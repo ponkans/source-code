@@ -8,23 +8,20 @@
   </head>
   <body></body>
   <script>
-    //动态路由参数匹配 /user/:userId/:name + /user/123/zongwei ==> {userId: 123}
+    //动态路由参数匹配 /user/:userId/:name + /user/123/zongwei ==> {userId: 123, name: zongwei}
     function dyMathc(rule, str) {
-      const ruleArr = rule.split("/");
-      const strArr = str.split("/");
-      
-      if (ruleArr.length !== strArr.length) return {};
-
-      let res = {};
-      for (let [index, item] of ruleArr.entries()) {
+      const ruleArr = rule.split('/');
+      const strArr = str.split('/');
+      const result = {};
+      for (let i = 0; i < ruleArr.length; i++) {
+        const item = ruleArr[i];
         if (item.startsWith(":")) {
-          const key = item.slice(1);
-          const value = strArr[index];
-          res[key] = value;
+          const key = item.split(':')[1];
+          const value = strArr[i];
+          result[key] = value;
         }
       }
-
-      return res;
+      return result;
     }
     console.log(dyMathc("/user/:userId/:name/", "/user/123/zongwei/"));
   </script>

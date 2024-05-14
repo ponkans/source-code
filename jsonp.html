@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 用于生成唯一回调函数名称的计数器
+  // let requestId = 0;  
+
+  // function jsonp(url, callback) {
+  //   // 生成唯一回调函数名
+  //   const callbackName = `jsonp_callback_${requestId++}`;
+
+  //   // 创建 script 标签并添加到页面中
+  //   const script = document.createElement('script');
+  //   script.type = 'text/javascript';
+  //   script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}`;
+  //   document.body.appendChild(script);
+
+  //   // 创建全局回调函数
+  //   window[callbackName] = function (data) {
+  //     callback(data);
+  //     delete window[callbackName];
+  //     document.body.removeChild(script);
+  //   };
+  // };
+
+  // jsonp('http://example.com/api/getData?name=zongwei', function (data) {
+  //   console.log('Received server data:', data);
+  // });
+
+
+  let id = 0;
+  function jsonp(url, callback) {
+    // window 挂载，script response 执行
+    // 考虑删除，已经并发重复问题 -> 每次回调名字不一样 -> 回收
+    const callbackName = `callback_${id}`;
+
+    const script = ducument.createElement('script');
+    script.type = 'text/javascript';
+    script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}`;
+    document.body.appendChild(script);
+
+    window[callbackName] = function(data) {
+      callback(data);
+      delete window[callbackName];
+      docuemnt.body.removeChild(script);
+    }
+  }
+
+  jsonp('https://test.com?name=zs', (response) => {
+    console.log(response);
+  })
+
+  // React 源码调试, 应该就很理解水合了，ssr无非是先生成 html，但是 html 是不带任何 click 事件的
+  // fiber 树构建的时候，dom 部分就直接有了，只是需要添加事件之类的
+</script>
+
+</html>

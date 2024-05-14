@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // ⾃⼰实现 EventBus 函数，⽅法包括：on、once、emit、off
+  class EventBus {
+    constructor() {
+      this.listeners = {};
+    } 
+
+    on(eventName, event) {
+      this.listeners[eventName] = this.listeners[eventName] || [];
+      this.listeners[eventName].push(event);
+    }
+
+    once(eventName, event) {
+      const newEvent = (...args) => {
+        event.apply(this, args);
+        this.off(eventName, newEvent);
+      }
+      this.on(eventName, newEvent);
+    }
+
+    emit(eventName, ...args) {
+      (this.listeners[eventName] || []).forEach(fn => {
+        fn.apply(this, args);
+      })
+    }
+
+    off(eventName, event) {
+      if (!this.listeners[eventName]) return;
+      const offIndex = (this.listeners[eventName] || []).findIndex(item => item === event);
+      if (offIndex !== -1) {
+        this.listeners[eventName].splice(offIndex, 1);
+      }
+    }
+  }
+
+  // 使用示例
+  const bus = new EventBus();
+  bus.once('test', (data) => console.log(data));
+  bus.emit('test', 888);
+  bus.emit('test', 999);
+</script>
+
+</html>

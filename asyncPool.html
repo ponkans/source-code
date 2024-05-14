@@ -14,26 +14,26 @@
 
   MyPromise.all = function (lists) {
     return new Promise((resolve, reject) => {
+      const result = [];
       let count = 0;
-      let resArr = [];
       for (let i = 0; i < lists.length; i++) {
-        lists[i].then((data) => {
-          count++;
-          resArr[i] = data;
+        const promiseFn = Promise.resolve(lists[i]);
+        promiseFn.then(data => {
+          result[i] = data;
+          count += 1;
           if (count === lists.length) {
-            resolve(resArr)
+            resolve(result);
           }
-        }).catch(() => {
-          reject();
-        })
+        }).catch(reject);
       }
     })
   }
 
   MyPromise.race = function (lists) {
     return new Promise((resolve, reject) => {
-      for (let pro of lists) {
-        pro.then(resolve).catch(reject);
+      for (let fn of lists) {
+        const promiseFn = Promise.resolve(fn);
+        promiseFn.then(resolve).catch(reject);
       }
     })
   }
@@ -49,23 +49,18 @@
 
   // 异步任务队列
   async function asyncPool(limit, iterable, iteratorFn) {
-    const all = [];
-    const quque = new Set();
-
-    for (let item of iterable) {
-      const task = Promise.resolve(iteratorFn(item))
-      all.push(task);
-      task.then(() => quque.delete(task))
-      quque.add(task);
-      if (quque.size >= limit) {
-        console.log("等待中", quque.size);
-        // await Promise.race(quque);
-        await MyPromise.race(quque);
+    const allTask = [];
+    const queue = new Set();
+    for (let timer of iterable) {
+      const promiseFn = Promise.resolve(iteratorFn(timer));
+      promiseFn.then(() => queue.delete(promiseFn));
+      allTask.push(promiseFn);
+      queue.add(promiseFn);
+      if (queue.size >= limit) {
+        await MyPromise.race(queue);
       }
     }
-
-    // return Promise.all(all);
-    return MyPromise.all(all);
+    return MyPromise.all(allTask);
   }
 
   async function start() {

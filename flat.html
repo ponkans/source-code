@@ -10,30 +10,12 @@
   <script>
     const arr = [1, [2, 2, 3], 2, [33, [44, [55]]]];
 
-    function flatArr(arr, newArr) {
-      for (let item of arr) {
-        if (Array.isArray(item)) {
-          flatArr(item, newArr);
-        } else {
-          newArr.push(item);
-        }
-      }
-      return newArr;
-    }
-    const res = flatArr(arr, []);
-    debugger;
-
-    // function flat(arr) {
-    //   return arr.reduce((pre, item) => {
-    //     return pre.concat(Array.isArray(item) ? flat(item) : item);
-    //   }, []);
-    // }
-    // const res = flat(arr);
-
     function flat(arr) {
       return arr.reduce((pre, item) => {
-        return pre.concat(Array.isArray(item) ? flat(item) : item)
+        return pre.concat(Array.isArray(item) ? flat(item) : item);
       }, [])
     }
+
+    console.log(flat(arr));
   </script>
 </html>

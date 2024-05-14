@@ -12,12 +12,12 @@
 </body>
 <script>
   function curry(fn) {
-    return function curried(...args) {
-      if (args.length === fn.length) {
-        return fn.apply(this, args);
+    return function rec(...args1) {
+      if (fn.length === args1.length) {
+        return fn.apply(this, args1);
       }
-      return function (...args2) {
-        return curried.apply(this, [...args, ...args2]);
+      return function(...args2) {
+        return rec.apply(this, [...args1, ...args2]);
       }
     }
   }
@@ -28,9 +28,9 @@
 
   let curriedSum = curry(sum);
 
-  alert(curriedSum(1, 2, 3)); // 6，仍然可以被正常调用
-  alert(curriedSum(1)(2, 3)); // 6，对第一个参数的柯里化
-  alert(curriedSum(1)(2)(3)); // 6，全柯里化
+  console.log(curriedSum(1, 2, 3)); // 6，仍然可以被正常调用
+  console.log(curriedSum(1)(2, 3)); // 6，对第一个参数的柯里化
+  console.log(curriedSum(1)(2)(3)); // 6，全柯里化
 </script>
 
 </html>

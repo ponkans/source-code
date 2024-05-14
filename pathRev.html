@@ -2,55 +2,55 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
 </head>
 
 <body></body>
 <script>
-  const input = {
-    a: 1,
-    b: [1, 2, { c: true }, [3]],
-    d: { e: 2, f: 3 },
-    g: null,
-  };
-  // 返回
-  // {
-  //     "a": 1,
-  //     "b[0]": 1,
-  //     "b[1]": 2,
-  //     "b[2].c": true,
-  //     "b[3][0]": 3,
-  //     "d.e": 2,
-  //     "d.f": 3,
-  //     "g": null,  值为null或者undefined，丢弃
-  // };
+    const input = {
+        a: 1,
+        b: [1, 2, { c: true }, [3]],
+        d: { e: 2, f: 3 },
+        g: null,
+    };
+    // 返回
+    // {
+    //     "a": 1,
+    //     "b[0]": 1,
+    //     "b[1]": 2,
+    //     "b[2].c": true,
+    //     "b[3][0]": 3,
+    //     "d.e": 2,
+    //     "d.f": 3,
+    //     "g": null,  值为null或者undefined，丢弃
+    // };
 
-  function rec(preKey, value, result) {
-    if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
-      result[preKey] = value;
+    function rec(preKey, value, result) {
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+            result[preKey] = value;
+        }
+        if (Array.isArray(value)) {
+            for (let [index, arrValue] of value.entries()) {
+                rec(`${preKey}[${index}]`, arrValue, result);
+            }
+        }
+        if (Object.prototype.toString.call(value) === '[object Object]') {
+            for (let [key, objValue] of Object.entries(value)) {
+                rec(`${preKey}.${key}`, objValue, result);
+            }
+        }
     }
-    if (Array.isArray(value)) {
-      for (let [index, arrValue] of value.entries()) {
-        rec(`${preKey}[${index}]`, arrValue, result);
-      }
-    }
-    if (Object.prototype.toString.call(value) === "[object Object]") {
-      for (let [key, objValue] of Object.entries(value)) {
-        rec(`${preKey}.${key}`, objValue, result);
-      }
-    }
-  }
 
-  const result = {}
-  for (let [key, value] of Object.entries(input)) {
-    rec(key, value, result);
-  }
+    const result = {};
+    for (let [key, value] of Object.entries(input)) {
+        rec(key, value, result);
+    }
 
-  console.log(result);
-  debugger
+    console.log(result);
+    debugger
 </script>
 
 </html>

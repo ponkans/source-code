@@ -24,21 +24,20 @@
       const arr2 = b.split('.');
       let index = 0;
       while(true) {
-        const value1 = arr1[index];
-        const value2 = arr2[index];
+        const item1 = arr1[index];
+        const item2 = arr2[index];
         index++;
-        if (value1 === undefined || value2 === undefined) {
+        if (item1 === undefined || item2 === undefined) {
           return arr1.length - arr2.length;
         }
-        if (value1 === value2) {
+        if (item1 === item2) {
           continue;
         }
-        return Number(value1) - Number(value2);
+        return Number(item1) - Number(item2);
       }
     }
 
-    arr.sort((a, b) => compare(a, b));
-    console.log(arr)
-    debugger
+    arr.sort(compare);
+    console.log(arr);
   </script>
 </html>

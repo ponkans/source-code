@@ -28,29 +28,25 @@
     { id: "15", name: "小涛", pid: "06", job: "运维工程师" },
   ];
   function arrayToTree(arr) {
-    let tree = {};
-
-    // 建立映射关系
-    const arrMap = arr.reduce((pre, item) => {
+    const map = arr.reduce((pre, item) => {
       pre[item.id] = item;
-      return pre
+      return pre;
     }, {});
 
-    // 挨个寻找父节点，并加入父节点的 children
+    let tree = {};
     for (let item of arr) {
-      const parent = arrMap[item.pid];
-      if (!parent) {
-        tree = item;
-      } else {
+      const parent = map[item.pid];
+      if (parent) {
         parent.children = parent.children || [];
         parent.children.push(item);
+      } else {
+        tree = item;
       }
     }
-
     return tree;
   }
   const tree = arrayToTree(data)
-  console.log(tree)
+  console.log(tree, '____')
 
   const treeTemp = {
     "id": "01",
@@ -160,11 +156,7 @@
     const dfs = (tree) => {
       const { children, ...item } = tree;
       arr.push(item);
-      if (children?.length > 0) {
-        children.forEach(child => {
-          dfs(child);
-        })
-      }
+      (children || []).forEach(dfs);
     }
     dfs(tree);
     return arr;
@@ -173,19 +165,14 @@
 
   function treeToArrBfs(tree) {
     const arr = [];
-
     const queue = [tree];
     while(queue.length > 0) {
-      const treeItem = queue.shift();
-      const { children, ...item } = treeItem;
+      const { children, ...item } = queue.shift();
       arr.push(item);
-      if (children?.length > 0) {
-        children.forEach(child => {
-          queue.push(child);
-        });
-      }
+      (children || []).forEach(child => {
+        queue.push(child);
+      })
     }
-
     return arr;
   }
   console.log(treeToArrBfs(treeTemp));
