@@ -1,31 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-  
+
 </body>
 <script>
+  // promise
   class MyPromise {
-    construcotr(callback) {
-      this.callback = callback;
+    constructor(runner) {
+      this.state = 'pending';
+      this.value = '';
+      this.successQueue = [];
+
+      let resolve = (value) => {
+        if (this.state === 'pending') {
+          this.state = 'success';
+          this.value = value;
+          (this.successQueue || []).forEach(cb => cb(this.value));
+        }
+      };
+
+      runner(resolve);
     }
 
-    then = () => {
-      
+    then(successCb) {
+      // 这里其实需要返回一个 promise，进行递归
+      const newPromise = new MyPromise((resolve => {
+        if (this.state === 'success') {
+          resolve(successCb(this.value));
+        }
+        if (this.state === 'pending') {
+          this.successQueue.push(() => {
+            resolve(successCb(this.value));
+          });
+        }
+      }));
+      return newPromise;
     }
   }
 
-  const promiseTest = new Promise((resolve) => {
+  const testPromise = new MyPromise((resolve) => {
     setTimeout(() => {
-      resolve(3000);
-    }, 3000);
-  })
-  promiseTest.then((data) => {
-    console.log(data);
+      resolve(123);
+    }, 2000);
+  });
+  testPromise.then((res) => {
+    console.log(res, 'one');
+    return res + 1;
+  }).then(res => {
+    console.log(res, 'two');
   })
 </script>
+
 </html>

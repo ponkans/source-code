@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-  <script>
-    const arr = [1, [2, 2, 3], 2, [33, [44, [55]]]];
 
-    function flat(arr) {
-      return arr.reduce((pre, item) => {
-        return pre.concat(Array.isArray(item) ? flat(item) : item);
-      }, [])
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body></body>
+<script>
+  const arr = [1, [2, 2, 3], 2, [33, [44, [55]]]];
+
+  function flat(arr) {
+    return arr.reduce((pre, item) => {
+      return pre.concat(Array.isArray(item) ? flat(item) : item);
+    }, [])
+  }
+
+  function flat1(arr) {
+    let result = [];
+
+    function flat2(arr) {
+      for (let item of arr) {
+        if (Array.isArray(item)) {
+          flat2(item);
+        } else {
+          result.push(item);
+        }
+      }
     }
+    flat2(arr);
 
-    console.log(flat(arr));
-  </script>
+    return result;
+  }
+
+  console.log(flat1(arr));
+</script>
+
 </html>
