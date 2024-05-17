@@ -18,16 +18,16 @@
   // 后续遍历
   function sort(arr, low, high) {
     if (low >= high) {
-      return [arr[low]];
+      return [arr[low]]
     }
     const middle = Math.floor((low + high) / 2);
     const left = sort(arr, low, middle);
-    const rigth = sort(arr, middle + 1, high);
-    return merge(left, rigth);
+    const right = sort(arr, middle + 1, high);
+    return merge(left, right);
   }
 
   function merge(arr1, arr2) {
-    return [...arr1, ...arr2].sort((a, b) => a - b);
+    return [...arr1, ... arr2].sort((a, b) => a - b);
   }
 
   console.log(mergeSort(testArr));

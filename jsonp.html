@@ -39,19 +39,18 @@
 
   let id = 0;
   function jsonp(url, callback) {
-    // window 挂载，script response 执行
-    // 考虑删除，已经并发重复问题 -> 每次回调名字不一样 -> 回收
-    const callbackName = `callback_${id}`;
-
-    const script = ducument.createElement('script');
+    // 发起一个 script 请求，根据 window 上相同的函数名，返回执行
+    // 考虑回收，冲突的问题
+    const callbackName = `callback_${id++}`;
+    const script = document.createElment('script');
     script.type = 'text/javascript';
     script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}`;
     document.body.appendChild(script);
-
+    
     window[callbackName] = function(data) {
       callback(data);
       delete window[callbackName];
-      docuemnt.body.removeChild(script);
+      document.body.removeChild(script);
     }
   }
 

@@ -13,14 +13,16 @@
       const ruleArr = rule.split('/');
       const strArr = str.split('/');
       const result = {};
+
       for (let i = 0; i < ruleArr.length; i++) {
         const item = ruleArr[i];
-        if (item.startsWith(":")) {
+        if (item.startsWith(':')) {
           const key = item.split(':')[1];
           const value = strArr[i];
           result[key] = value;
         }
       }
+
       return result;
     }
     console.log(dyMathc("/user/:userId/:name/", "/user/123/zongwei/"));

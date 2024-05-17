@@ -10,24 +10,51 @@
 <body></body>
 <script>
   function MyPromise() {
+
   }
 
-  MyPromise.all = function (lists) {
-    return new Promise((resolve, reject) => {
-      const result = [];
+  MyPromise.all = function (promiseList) {
+    // 全部完成 -> resolve all
+    return new Promise((resolve) => {
+      const allResult = [];
       let count = 0;
-      for (let i = 0; i < lists.length; i++) {
-        const promiseFn = Promise.resolve(lists[i]);
-        promiseFn.then(data => {
-          result[i] = data;
+      for (let i = 0; i < promiseList.length; i++) {
+        const promiseFn = Promise.resolve(promiseList[i]);
+        promiseFn.then((res) => {
+          allResult[i] = res;
           count += 1;
-          if (count === lists.length) {
-            resolve(result);
+          if (count === promiseList.length) {
+            resolve(allResult);
           }
-        }).catch(reject);
+        })
       }
     })
   }
+
+  // MyPromise.allSettled 实现
+  MyPromise.allSettled = function (promiseList) {
+    return new Promise((resolve) => {
+      const len = promiseList.length;
+      const result = [];
+      let count = 0;
+      for (let i = 0; i < len; i++) {
+        promiseList[i]
+          .then((res) => {
+            result[i] = { status: 'success', data: res };
+          })
+          .catch((err) => {
+            result[i] = { status: 'fail', data: err };
+          })
+          .finally(() => {
+            count += 1;
+            if (count === len) {
+              resolve(result);
+            }
+          })
+      }
+    })
+  }
+
 
   MyPromise.race = function (lists) {
     return new Promise((resolve, reject) => {
@@ -51,15 +78,17 @@
   async function asyncPool(limit, iterable, iteratorFn) {
     const allTask = [];
     const queue = new Set();
+
     for (let timer of iterable) {
-      const promiseFn = Promise.resolve(iteratorFn(timer));
-      promiseFn.then(() => queue.delete(promiseFn));
-      allTask.push(promiseFn);
-      queue.add(promiseFn);
+      const fn = Promise.resolve(iteratorFn(timer));
+      allTask.push(fn);
+      queue.add(fn);
+      fn.then(() => queue.delete(fn));
       if (queue.size >= limit) {
-        await MyPromise.race(queue);
+        await Promise.race(queue);
       }
     }
+
     return MyPromise.all(allTask);
   }
 

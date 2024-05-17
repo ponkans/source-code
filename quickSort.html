@@ -14,7 +14,6 @@
       if (low >= high) {
         return;
       }
-      // 前序遍历, 找到中间值，左侧 <=，右侧 >=
       const middleIndex = temp(arr, low, high);
       quickSort(arr, low, middleIndex - 1);
       quickSort(arr, middleIndex + 1, high);

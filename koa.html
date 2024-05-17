@@ -40,7 +40,7 @@
         let index = 0;
         function dispatch(index) {
             const fn = middleArr[index];
-            index += 1;
+            index++;
             if (!fn) {
                 return Promise.resolve();
             }

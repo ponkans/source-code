@@ -17,12 +17,14 @@
     // 输入 source，返回深克隆后的对象
     const map = new WeakMap();
     function deepClone(source) {
-      if (typeof source === 'string' || typeof source === 'number' || typeof source === 'boolean') {
+      if (typeof source === 'number' || typeof source === 'string' || typeof source === 'boolean') {
         return source;
       }
+
       if (map.has(source)) {
         return map.get(source);
       }
+
       if (Array.isArray(source)) {
         const result = [];
         map.set(source, result);
@@ -31,6 +33,7 @@
         }
         return result;
       }
+
       if (Object.prototype.toString.call(source) === '[object Object]') {
         const result = {};
         map.set(source, result);

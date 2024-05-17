@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // class EventBus {
+  //   constructor() {
+  //     this.listeners = {}; // { [eventName]: [callback1, callback2] }
+  //     this.groupListeners = []; // [{ events: [1, 2, 3], callback, emitEvents: new Set() }]
+  //   }
+
+  //   on(eventName, callback) {
+  //     this.listeners[eventName] = this.listeners[eventName] || [];
+  //     this.listeners[eventName].push(callback);
+  //   }
+
+  //   onGroup(events, callback) {
+  //     this.groupListeners.push({ events, callback, emitEvents: new Set() });
+  //   }
+
+  //   emit(eventName, ...args) {
+  //     // 触发单个
+  //     (this.listeners[eventName] || []).forEach(cb => {
+  //       cb.apply(this, args);
+  //     });
+
+  //     // 检查组是否需要触发
+  //     this.groupListeners.forEach(groupLister => {
+  //       const { events, callback, emitEvents } = groupLister;
+  //       if (events.includes(eventName)) {
+  //         emitEvents.add(eventName);
+  //         if (events.every(item => emitEvents.has(item))) {
+  //           // 满足触发条件
+  //           callback.apply(this, args);
+  //           // 移除此组 group 对应的 emitEvents, 供下组触发
+  //           groupLister.emitEvents = new Set();
+  //         }
+  //       }
+  //     })
+  //   }
+  // }
+
+  // const eventBus = new EventBus();
+  // eventBus.onGroup(['event1', 'event2', 'event3'], () => {
+  //   console.log('所有事件都被触发');
+  // });
+  // eventBus.emit('event1');  // 输出: "event1 被触发"
+  // eventBus.emit('event2');  // 输出: "event2 被触发"
+  // eventBus.emit('event3');  // 输出: "所有事件都被触发"
+
+  // eventBus.emit('event1');  // 输出: "event1 被触发"
+  // eventBus.emit('event2');  // 输出: "event2 被触发"
+  // eventBus.emit('event3');  // 输出: "所有事件都被触发"
+
+
+  class EventBus {
+    constructor() {
+      this.listeners = {}; // { [eventName]: [callback1, clllback2] }
+      this.groupListeners = []; // [{ events: [1, 2, 3], callback, emitedEvents: new Set() }]
+    }
+
+    on(eventName, callback) {
+      this.listeners[eventName] = this.listeners[eventName] || [];
+      this.listeners[eventName].push(callback);
+    }
+
+    onGroup(events, callback) {
+      this.groupListeners.push({ events, callback, emitedEvents: new Set() });
+    }
+
+    emit(eventName, ...args) {
+      // 单个
+      (this.listeners[eventName] || []).forEach(cb => {
+        cb.apply(this.args);
+      })
+
+      // group
+      this.groupListeners.forEach((groupLister) => {
+        const { events, callback, emitedEvents } = groupLister;
+        if (events.includes(eventName)) {
+          emitedEvents.add(eventName);
+          const hasDone = events.every(item => emitedEvents.has(item));
+          if (hasDone) {
+            callback.apply(this, args);
+            // 重置 
+            groupLister.emitedEvents = new Set();
+          }
+        }
+      })
+    }
+  }
+
+  const eventBus = new EventBus();
+  
+  eventBus.onGroup(['event1', 'event2', 'event3'], () => {
+    console.log('所有事件都被触发');
+  });
+
+  eventBus.emit('event1');  // 输出: "event1 被触发"
+  eventBus.emit('event2');  // 输出: "event2 被触发"
+  eventBus.emit('event3');  // 输出: "所有事件都被触发"
+
+  eventBus.emit('event1');  // 输出: "event1 被触发"
+  eventBus.emit('event2');  // 输出: "event2 被触发"
+  eventBus.emit('event3');  // 输出: "所有事件都被触发"
+
+</script>
+
+</html>
