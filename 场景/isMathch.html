@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 判断左右括号「{ & ( & [」是否匹配
+  // a[{(bc)}]def ==> true   [{()}]
+  // a{(bc)}]def ==> false
+  // a(b}c ==> false
+
+  function isMatch(s) {
+    const stack = [];
+    const map = {
+      ')': '(',
+      ']': '[',
+      '}': '{'
+    }
+    for (let item of s) {
+      if (Object.values(map).includes(item)) {
+        stack.push(item);
+        continue;
+      }
+      if (map[item]) {
+        const top = stack.pop();
+        if (top !== map[item]) {
+          return false;
+        }
+      }
+    }
+    return stack.length === 0;
+  }
+
+  console.log(isMatch('()'), '______________________kk---');
+  console.log(isMatch('a[{(bc)}]def'))
+  console.log(isMatch('a{(bc)}]def'))
+  console.log(isMatch('a(b}c'))
+</script>
+</html>

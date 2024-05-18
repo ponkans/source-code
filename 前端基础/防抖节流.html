@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 防抖，节流
+  function debounce(fn, delay) {
+    let timer = null;
+
+    return function (...args) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        fn.apply(this, args);
+        timer = null;
+      }, delay);
+    }
+  }
+
+  const debouncedFunction = debounce(() => {
+    console.log('执行了防抖函数');
+  }, 2000, true);
+
+  // 连续触发，但只有最后一次触发后延时结束才会执行函数
+  debouncedFunction();
+  debouncedFunction();
+  debouncedFunction();
+  // 等待 200ms 后输出: 执行了防抖函数
+
+  // 节流：按照固定频率运行，通过时间差来实现
+  function throttle(fn, delay) {
+    let timeId = null;
+
+    return function (...args) {
+      if (timeId) {
+        return;
+      }
+      timeId = setTimeout(() => {
+        fn.apply(this, args);
+        timeId = null;
+      }, delay);
+    }
+  }
+</script>
+
+</html>

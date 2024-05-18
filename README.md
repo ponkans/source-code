@@ -1,2 +1,1 @@
-# source-code
-笔试冲刺仓库，每日打开！
+# javascript 高频笔试题汇总

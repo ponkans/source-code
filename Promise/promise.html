@@ -15,32 +15,31 @@
   class MyPromise {
     constructor(runner) {
       this.state = 'pending';
-      this.value = '';
       this.successQueue = [];
-
-      let resolve = (value) => {
+      this.value = '';
+      
+      let resolve = (data) => {
         if (this.state === 'pending') {
           this.state = 'success';
-          this.value = value;
-          (this.successQueue || []).forEach(cb => cb(this.value));
+          this.value = data;
+          this.successQueue.forEach(cb => {
+            cb(this.value);
+          })
         }
-      };
-
+      }
       runner(resolve);
     }
 
-    then(successCb) {
-      // 这里其实需要返回一个 promise，进行递归
-      const newPromise = new MyPromise((resolve => {
-        if (this.state === 'success') {
-          resolve(successCb(this.value));
-        }
+    then(callback) {
+      const newPromise = new MyPromise((resolve) => {
         if (this.state === 'pending') {
           this.successQueue.push(() => {
-            resolve(successCb(this.value));
-          });
+            resolve(callback(this.value));
+          })
+        } else if (this.state === 'success') {
+          resolve(callback(this.value));
         }
-      }));
+      });
       return newPromise;
     }
   }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 找出连续最⻓字符串： 'abcddddeefffrrrrrrrr' ==> {char: 'd', startIndex: 3, endIndex: 6}
+  function findMaxlLongStr(s) {
+    let left = 0, right = 0;
+    let maxInfo = {}, maxLen = 0;
+    while (right < s.length) {
+      if (s[right] !== s[left]) {
+        left = right;
+      }
+      if (right - left + 1 > maxLen) {
+        maxLen = right - left + 1;
+        maxInfo = { char: s[left], startIndex: left, endIndex: right }
+      }
+      right++;
+    }
+    return maxInfo;
+  }
+  console.log(findMaxlLongStr('abcddddeefff'), '___最长连续');
+  console.log(findMaxlLongStr('abcddddeefffhhhhhhhhhhhhhh'));
+
+  // "abcaxyubcbb", 无重复字符的最长子串长度
+  function findMaxNoStr(s) {
+    let maxLen = 0;
+    const map = new Map();
+    let left = 0, right = 0;
+    while (right < s.length) {
+      if (map.has(s[right]) && map.get(s[right]) >= left) {
+        left = map.get(s[right]) + 1;
+      }
+      map.set(s[right], right);
+      maxLen = Math.max(maxLen, right - left + 1);
+      right++;
+    }
+    return maxLen;
+  }
+  console.log(findMaxNoStr('abcaxyubcbb'), 'findMaxNoStr');
+
+  // "babad", 最长回文子串
+  function getMax(s, l, r) {
+    while (l >= 0 && r < s.length && s[l] === s[r]) {
+      l--;
+      r++;
+    }
+    return s.substring(l + 1, r);
+  }
+
+  function getMaxFStr(s) {
+    let maxStr = '';
+    for (let i = 0; i < s.length; i++) {
+      const str1 = getMax(s, i, i);
+      const str2 = getMax(s, i - 1, i);
+      maxStr = maxStr.length > str1.length ? maxStr : str1;
+      maxStr = maxStr.length > str2.length ? maxStr : str2;
+    }
+    return maxStr;
+  }
+</script>
+
+</html>

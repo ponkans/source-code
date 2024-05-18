@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 解析 url 参数
+  // 输入 'https://www.baidu.com?name=zongwei&age=18'
+  // 输出 { name: 'zongwei', age: '18' }
+  function parseURL(path) {
+    const str = path.match(/[^?]*$/g)[0];
+    const strArr = str.split('&');
+    const result = {};
+    for (let item of strArr) {
+      const [key, value] = item.split('=');
+      if (key && value) {
+        result[key] = decodeURIComponent(value);
+      }
+    }
+    return result;
+  }
+  console.log(parseURL('https://www.baidu.com?name=zongwei&age=18'))
+</script>
+</html>

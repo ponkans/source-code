@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 封装模板⽅法： template('{user.weight}kg', {user: {weight: 80, height: 180}}) ==> '80kg'
+  function template(str, data) {
+    return str.replace(/{(.+)}/g, (value1, value2) => {
+      const keyArr = value2.split('.');
+      let res = data;
+      for (let key of keyArr) {
+        res = res[key];
+      }
+      return res;
+    })
+  }
+
+  // 示例用法
+  var result = template('{user.weight}kg', { user: { weight: 80, height: 180 } });
+  console.log(result); // 输出 '80kg'
+</script>
+</html>

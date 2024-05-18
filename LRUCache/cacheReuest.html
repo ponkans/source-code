@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 文中的实现，会不会不够通用，且耦合比较高。缓存的逻辑单独拿出来维护，增加复用性，代码结构也会更清晰。
+  // 我写了一版，可以一起交流学习
+
+  // LRU 缓存
+  class LRUCache {
+    constructor(limit) {
+      this.limit = limit;
+      this.map = new Map();
+    }
+
+    has(key) {
+      return this.map.has(key);
+    }
+
+    get(key) {
+      if (!this.has(key)) return;
+      const value = this.map.get(key);
+      this.map.delete(key);
+      this.map.set(key, value);
+      return value;
+    }
+
+    put(key, value) {
+      if (this.map.has(key)) {
+        this.map.delete(key);
+      }
+      if (this.map.size >= this.limit) {
+        const oldKey = this.map.keys().next().value;
+        this.map.delete(oldKey);
+      }
+      this.map.set(key, value);
+    }
+  }
+
+  // LRU 包裹
+  function memoizedFunction(fn, limit) {
+    const LRUCacheIns = new LRUCache(limit);
+
+    return async function (...args) {
+      const key = JSON.stringify(args);
+      if (LRUCacheIns.has(key)) {
+        console.log('命中缓存:', LRUCacheIns.get(key));
+        return LRUCacheIns.get(key);
+      }
+      const value = await fn.apply(this, args);
+      console.log('正常执行:', value);
+      LRUCacheIns.put(key, value);
+      console.log(LRUCacheIns.map);
+      return value;
+    }
+  }
+
+  async function request(api, params) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(`${api}: ${JSON.stringify(params)}`);
+      }, Math.random() * 2000);
+    })
+  }
+
+  const memoizedRequest = memoizedFunction(request, 3);
+  memoizedRequest('api/getList1', { page: 10, pageSize: 20 });
+  memoizedRequest('api/getList2', { page: 10, pageSize: 20 });
+  memoizedRequest('api/getList1', { page: 10, pageSize: 20 });
+  memoizedRequest('api/getList2', { page: 10, pageSize: 20 });
+
+  setTimeout(() => {
+    memoizedRequest('api/getList1', { page: 10, pageSize: 20 });
+    memoizedRequest('api/getList2', { page: 10, pageSize: 20 });
+  }, 2000);
+
+</script>
+
+</html>
