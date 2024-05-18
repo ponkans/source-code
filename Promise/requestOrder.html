@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 多个异步请求，按顺序执行
+  // 某个请求异常或手动终止，后续请求不再执行，直接返回已成功的结果数组
+
+  function asyncRequest() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, Math.random() * 2000);
+    })
+  }
+
+  let isTermination = false;
+  async function requestOrder(requestList) {
+    const result = [];
+
+    for (let request of requestList) {
+      try {
+        if (isTermination) {
+          console.log(result);
+          return result;
+        }
+        const res = await Promise.resolve(request());
+        result.push(res);
+        console.log(res);
+      } catch (error) {
+        isTermination = true;
+        console.log(result);
+        return result;
+      }
+    }
+
+    console.log('执行结束');
+    return result;
+  }
+
+  requestOrder([asyncRequest, asyncRequest, asyncRequest, asyncRequest, asyncRequest])
+</script>
+</html>

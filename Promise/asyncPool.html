@@ -80,6 +80,9 @@
     const queue = new Set();
 
     for (let timer of iterable) {
+      // 这里其实并不保证顺序，阿里那个保证顺序，直接 await 就可以了
+      // 改造下，入参就是一个 promise 数组，跟这里那个保证同步的顺序的入参一致 
+      // 昨天之所以卡住，是因为执行一个 promise 搞懵逼了！
       const fn = Promise.resolve(iteratorFn(timer));
       allTask.push(fn);
       queue.add(fn);

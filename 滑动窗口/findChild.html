@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 求连续为1的子序列的最长长度
+  // 备注: 子序列中可以包含最多1个0
+
+  function findMaxChildLen(arr) {
+    let left = 0, right = 0;
+    let maxLen = 0;
+    let zeroCount = 0;
+    while(right < arr.length) {
+      if (arr[right] === 0) {
+        zeroCount += 1;
+      }
+
+      // 保证窗口内最多只有1个0
+      // 这样窗口的长度，就是满足要求的子序列的长度
+      // 举一反三: 如果是最多包含两个0，那这里就是 zeroCount > 2 就可以了
+      while(zeroCount > 1) {
+        // 移动左指针
+        if (arr[left] === 0) {
+          zeroCount--;
+        }
+        left++;
+      }
+
+      maxLen = Math.max(maxLen, right - left + 1);
+      right++;
+    }
+    return maxLen;
+  }
+
+  console.log(findMaxChildLen([1, 1, 0, 1, 1, 1, 0,1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1])); // 输出 9
+  console.log(findMaxChildLen([0,1,1,1,1,1,0])); // 6
+</script>
+
+</html>

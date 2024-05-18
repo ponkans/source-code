@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function asyncRequest() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(100);
+        console.log(100);
+      }, Math.random() * 1000);
+    })
+  }
+
+  async function asyncPool(requestList, limit) {
+    const allTask = [];
+    const queue = new Set();
+
+    // 这里的并发控制，实际上是没有顺序的，只是控制了并发数量
+    // 如果要控制顺序，那就是 requestOrder.html 的写法
+    for (let task of requestList) {
+      const promiseFn = Promise.resolve(task());
+      allTask.push(promiseFn);
+      queue.add(promiseFn);
+      promiseFn.then(() => queue.delete(promiseFn));
+      if (queue.size >= limit) {
+        console.log('等待中');
+        await Promise.race(queue);
+      }
+    }
+
+    return Promise.all(allTask);
+  }
+
+  asyncPool([asyncRequest, asyncRequest, asyncRequest, asyncRequest], 2);
+</script>
+</html>

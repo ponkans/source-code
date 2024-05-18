@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body></body>
+<script>
+  const source = {
+    a: 123,
+    b: [22, 33],
+    c: { name: 222, obj: { testArr: [] } },
+  };
+  source['d'] = source; // 添加循环引用
+
+  const map = new WeakMap();
+
+  function deepClone(source) {
+    if (typeof source === 'string' || typeof source === 'number' || typeof source === 'boolean') {
+      return source;
+    }
+    if (map.has(source)) {
+      return map.get(source);
+    }
+
+    let result;
+    if (Array.isArray(source)) {
+      result = [];
+    } else if (Object.prototype.toString(source) === '[object Object]') {
+      result = {};
+    }
+    map.set(source, result);
+
+    Object.keys(source).forEach((key) => {
+      result[key] = deepClone(source[key]);
+    });
+
+    return result;
+  }
+
+  const clone = deepClone(source);
+  console.log(clone);
+  console.log(clone.d === clone); // 验证循环引用是否正确处理
+
+
+</script>
+
+</html>

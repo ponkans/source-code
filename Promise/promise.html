@@ -13,31 +13,32 @@
 <script>
   // promise
   class MyPromise {
-    constructor(runner) {
+    constructor(callback) {
       this.state = 'pending';
-      this.successQueue = [];
       this.value = '';
-      
-      let resolve = (data) => {
+      this.successQueue = [];
+
+      let resolve = (value) => {
         if (this.state === 'pending') {
           this.state = 'success';
-          this.value = data;
-          this.successQueue.forEach(cb => {
-            cb(this.value);
+          this.value = value;
+          (this.successQueue || []).forEach(successFn => {
+            successFn(this.value);
           })
         }
       }
-      runner(resolve);
+
+      callback(resolve);
     }
 
     then(callback) {
       const newPromise = new MyPromise((resolve) => {
-        if (this.state === 'pending') {
+        if (this.state === 'success') {
+          resolve(callback(this.value));
+        } else if (this.state === 'pending') {
           this.successQueue.push(() => {
             resolve(callback(this.value));
           })
-        } else if (this.state === 'success') {
-          resolve(callback(this.value));
         }
       });
       return newPromise;

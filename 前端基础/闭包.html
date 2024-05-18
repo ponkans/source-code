@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function sum(...args1) {
+    // 闭包 + 递归
+    let totalArgs = args1;
+
+    function innerSum(...args2) {
+      totalArgs = totalArgs.concat(args2);
+      return innerSum;
+    }
+    innerSum.sumOf = function() {
+      return totalArgs.reduce((pre, cur) => pre + cur, 0);
+    }
+
+    return innerSum;
+  }
+
+  // 设计一个sum函数，使其满足以下要求
+  console.log(sum(1, 2).sumOf());          // 返回 3
+  console.log(sum(1, 2)(3).sumOf());       // 返回 6
+  console.log(sum(1)(2, 3, 4).sumOf());    // 返回 10
+  console.log(sum(1, 2)(3, 4)(5).sumOf()); // 返回 15
+</script>
+</html>

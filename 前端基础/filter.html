@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  Array.prototype.filter = function(filterFn) {
+    const arr = this;
+    const result = [];
+    
+    for (let item of arr) {
+      const isOk = filterFn(item);
+      if (isOk) {
+        result.push(item);
+      }
+    }
+
+    return result;
+  }
+
+  console.log([1,2,3,4].filter((item) => item > 2));
+</script>
+</html>

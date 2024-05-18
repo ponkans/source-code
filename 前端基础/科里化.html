@@ -16,7 +16,7 @@
       if (fn.length === args1.length) {
         return fn.apply(this, args1);
       }
-      return function(...args2) {
+      return function (...args2) {
         return rec.apply(this, [...args1, ...args2]);
       }
     }
