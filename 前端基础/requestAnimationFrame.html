@@ -12,15 +12,19 @@
   function fn(delay) {
     let pre = Date.now();
 
-    function waiter() {
+    function runner() {
       const now = Date.now();
       if (now - pre >= delay) {
-        // 回调
+        console.log('执行__');
+        pre = now;
       }
-      requestAnimationFrame(waiter);
+
+      requestAnimationFrame(runner);
     }
-    
-    requestAnimationFrame(waiter);
+
+    requestAnimationFrame(runner);
   }
+
+  fn(1000);
 </script>
 </html>

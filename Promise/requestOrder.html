@@ -30,7 +30,7 @@
           console.log(result);
           return result;
         }
-        const res = await Promise.resolve(request());
+        const res = await request();
         result.push(res);
         console.log(res);
       } catch (error) {

@@ -42,7 +42,7 @@
     // 发起一个 script 请求，根据 window 上相同的函数名，返回执行
     // 考虑回收，冲突的问题
     const callbackName = `callback_${id++}`;
-    const script = document.createElment('script');
+    const script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}`;
     document.body.appendChild(script);

@@ -51,11 +51,10 @@
         this.queue.unshift(() => {
           return new Promise((resolve) => {
             setTimeout(() => {
-              console.log('sleepFirst', second);
               resolve(second);
-            }, 1000 * second);
-          });
-        });
+            }, second * 1000);
+          })
+        })
         return this;
       }
     }
