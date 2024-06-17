@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function asyncRequest() {
+    return new Promise(resolve => {
+      let time = Math.random();
+      setTimeout(() => {
+        resolve(time);
+      }, 2000 * time);
+    })
+  }
+
+  function resolveByOrder(requestList) {
+    // [{ promise: xxx, state: xxx }]
+    // 等于 0，直接打印
+    // 大于 0，判断前一个是否是 success 状态，是则打印；否则 await 等待前一个 promise success 后再打印
+    const queue = [];
+
+    for (let i = 0; i < requestList.length; i++) {
+      const request = requestList[i]();
+      queue[i] = { promise: request, state: 'pending' };
+      request
+        .then(async (data) => {
+          queue[i].state = 'success';
+          if (i === 0) {
+            console.log('0:', i, data, queue);
+          } else if (queue[i - 1].state === 'success') {
+            console.log('1:' ,i, data, queue);
+          } else {
+            await queue[i - 1].promise;
+            console.log('2:', i, data, queue);
+          }
+        })
+    }
+  }
+
+  resolveByOrder([asyncRequest, asyncRequest, asyncRequest, asyncRequest, asyncRequest, asyncRequest])
+</script>
+</html>

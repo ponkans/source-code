@@ -66,6 +66,38 @@
     }
     return maxStr;
   }
+
+  // [200, 800, -300, 400, -200, 600, 100]
+  // 长度为n的子数组的最大和
+  function findMaxSum(arr, n) {
+    let left = 0, right = 0;
+    let maxSum = 0, sum = 0;
+
+    // 初始化窗口
+    while (n) {
+      sum += arr[right];
+      right++;
+      n--;
+    }
+    right--;
+    maxSum = sum;
+
+    // 滑动窗口
+    while (right < arr.length - 1) {
+      sum -= arr[left];
+      left++;
+      right++;
+      sum += arr[right];
+      maxSum = Math.max(maxSum, sum);
+    }
+
+    return maxSum;
+  }
+
+  console.log(findMaxSum([200, 800, -800, 400, -200, 600, 100], 2))
+
+  // 最大子数组和
+  // leetcode 原题: https://leetcode.cn/problems/maximum-subarray
 </script>
 
 </html>

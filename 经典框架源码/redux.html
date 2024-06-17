@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // store
+  // dispatch reducers(curState, action) 
+
+  function createStore(reducers, initState) {
+    let currentReducers = reducers;
+
+    // 存
+    let currentState = initState;
+
+    // 取
+    const getState = () => {
+      return currentState;
+    }
+
+    // 改
+    const dispatch = (action) => {
+      currentState = currentReducers(currentState, action);
+      return action;
+    }
+
+    return {
+      getState,
+      dispatch
+    }
+  }
+
+  const reducers = (currentState, action) => {
+    switch (action.type) {
+      case 'ADD': {
+        return {
+          count: currentState.count + action.payload.count
+        }
+      }
+    }
+  }
+
+  const ADD_ACTION = {
+    type: 'ADD',
+    payload: {
+      count: 100
+    }
+  }
+
+  const store = createStore(reducers, { count: 0 });
+
+  // console.log(store.getState());
+  // store.dispatch(ADD_ACTION);
+  // console.log(store.getState());
+
+  var a = function (next) {
+    debugger
+    return function (action) {
+      console.log("a-before");
+      debugger
+      next(action);
+      debugger
+      console.log("a-after");
+    };
+  };
+
+  var b = function (next) {
+    debugger
+    return function (action) {
+      console.log("b-before");
+      debugger
+      next(action);
+      debugger
+      console.log("b-after");
+    };
+  };
+
+  var c = function (next) {
+    debugger
+    return function (action) {
+      console.log("c-before");
+      debugger
+      next(action);
+      debugger
+      console.log("c-after");
+    };
+  };
+
+  var dispatch = function (action) {
+    console.log("do ", action);
+    return action;
+  };
+
+  var d = [a, b, c].reduce((pre, now) => {
+    debugger
+    return (...args) => pre(now(...args))
+  });
+  debugger
+
+  let temp = d(dispatch);
+  debugger
+  temp("test action")
+</script>
+
+</html>

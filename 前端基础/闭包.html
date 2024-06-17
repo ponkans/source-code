@@ -29,5 +29,24 @@
   console.log(sum(1, 2)(3).sumOf());       // 返回 6
   console.log(sum(1)(2, 3, 4).sumOf());    // 返回 10
   console.log(sum(1, 2)(3, 4)(5).sumOf()); // 返回 15
+
+  // 一个可以链式调用的计算器类实现加减
+  // 不需要使用闭包，题目跟上述有点类似
+  function Calculator(initValue = 0) {
+    this.value = initValue;
+  }
+
+  Calculator.prototype.add = function(number) {
+    this.value += number;
+    debugger
+    return this;
+  }
+
+  Calculator.prototype.getResult = function() {
+    return this.value;
+  }
+
+  const CalculatorIns = new Calculator();
+  console.log(CalculatorIns.add(100).add(200).getResult());
 </script>
 </html>

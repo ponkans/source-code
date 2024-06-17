@@ -29,7 +29,7 @@
     let result;
     if (Array.isArray(source)) {
       result = [];
-    } else if (Object.prototype.toString(source) === '[object Object]') {
+    } else if (Object.prototype.toString.call(source) === '[object Object]') {
       result = {};
     }
     map.set(source, result);

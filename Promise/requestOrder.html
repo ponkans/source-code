@@ -30,6 +30,9 @@
           console.log(result);
           return result;
         }
+        // Promise.resolve() 包一下; 但其实 waiit 后面直接跟数字，比如 await 300 也是可以的;
+        // 但是如果是 fn.then 这种，就要包一下，确保 fn 是一个 promise 才能调用 then 方法
+        // const res = await Promise.resolve(request());
         const res = await request();
         result.push(res);
         console.log(res);

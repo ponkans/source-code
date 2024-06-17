@@ -17,6 +17,7 @@
     constructor() {
       this.listeners = {}; // { [eventName]: [callback1, clllback2] }
       this.groupListeners = []; // [{ events: [1, 2, 3], callback, emitedEvents: new Set() }]
+      this.groupKeyMap = new Map(); // { key: true }
     }
 
     on(eventName, callback) {
@@ -25,7 +26,10 @@
     }
 
     onGroup(events, callback) {
+      const key = events.sort().join('');
+      if (this.groupKeyMap.has(key)) return;
       this.groupListeners.push({ events, callback, emitedEvents: new Set() });
+      this.groupKeyMap.set(key, true);
     }
 
     emit(eventName, ...args) {
@@ -53,6 +57,10 @@
   const eventBus = new EventBus();
   
   eventBus.onGroup(['event1', 'event2', 'event3'], () => {
+    console.log('所有事件都被触发');
+  });
+
+  eventBus.onGroup(['event2', 'event1', 'event3'], () => {
     console.log('所有事件都被触发');
   });
 

@@ -14,6 +14,12 @@
   // a{(bc)}]def ==> false
   // a(b}c ==> false
 
+  // [“{”, “}”, “[”, “]”, “(”, “)”]
+  // 比如 "{}[]"是正确的
+  // 比如"{}["就是错的
+
+  // 上述两种场景，isMatch 都是适用的
+
   function isMatch(s) {
     const stack = [];
     const map = {
@@ -40,5 +46,6 @@
   console.log(isMatch('a[{(bc)}]def'))
   console.log(isMatch('a{(bc)}]def'))
   console.log(isMatch('a(b}c'))
+
 </script>
 </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  function asyncRequest() {
+    let time = 2000 * Math.random();
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(time);
+      }, time);
+    })
+  }
+
+  // 多个异步请求，需要每两个并行处理
+  // for 循环，for of 都可以 await 住，但是像 forEach、map、filter和reduce 这种回调的形式，就 await 不住了。
+  // 因为 forEach、map、filter和reduce 只是一个回调丢进去，而 for 循环，for of 底层是迭代器，顺序同步执行的
+  async function processRequest(requestList, num = 2) {
+    // 分组 -> 执行
+    for (let i = 0; i < requestList.length; i += num) {
+      const groupTask = requestList.slice(i, i + num);
+      console.log('等待中~');
+      await Promise.all(groupTask.map(task => task()))
+    }
+  }
+
+  processRequest([asyncRequest, asyncRequest, asyncRequest, asyncRequest, asyncRequest, asyncRequest])
+</script>
+
+</html>
