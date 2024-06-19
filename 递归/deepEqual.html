@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 深度比较 
+  // 数字、字符串 数组、对象
+  function deepEquals(val1, val2) {
+    // NaN 对比情况判断为相同
+    if (Number.isNaN(val1) && Number.isNaN(val2)) return true;
+
+    // 是否为对象
+    let valIsObject = function (val) {
+      return typeof val === 'object' && val !== null;
+    }
+    if (!valIsObject(val1) || !valIsObject(val2)) return val1 === val2;
+
+    // 当val1和val2都为对象时，若地址相同则相等
+    if (val1 === val2) return true;
+
+    // 到这一步可以判断 val1 和 val2 都是对象，为了区分 {} 和 []，如果没有此判断，会导致 deepEquals({}, []) 返回 true
+    let isEmptyObj = (Array.isArray(val1) && !Array.isArray(val2)) || (Array.isArray(val2) && !Array.isArray(val1));
+    if (isEmptyObj) return false;
+
+    // 获取键的长度，长度不等则不同，也是为了下面遍历时以短的为基准
+    if (Object.keys(val1).length !== Object.keys(val2).length) return false;
+    for (let key of Object.keys(val1)) {
+      const isEqual = deepEquals(val1[key], val2[key])
+      if (!isEqual) return false;
+    }
+
+    return true;
+  }
+
+  console.log(deepEquals(0, 0));	// true
+  console.log(deepEquals('str', 'str'));	// true
+  console.log(deepEquals(true, true));	// true
+  console.log(deepEquals(undefined, undefined));	// true
+  console.log(deepEquals(null, null));	// true
+  console.log(deepEquals({}, {}));	// true
+  console.log(deepEquals({ val: 1 }, { val: 1 }));	// true
+  console.log(deepEquals([1, 2, 3], [1, 2, 3, 4]));	// false
+  console.log(deepEquals([1, 2, { a: 1 }], [1, 2, { a: 1 }]));	// true
+
+</script>
+
+</html>

@@ -14,7 +14,7 @@
   // ⾃⼰实现 EventBus 函数，⽅法包括：on、once、emit、off
   class EventBus {
     constructor() {
-      this.listeners = {};
+      this.listeners = {}; // { name: [event1, event2] }
     } 
 
     on(eventName, event) {

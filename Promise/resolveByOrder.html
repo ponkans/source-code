@@ -18,27 +18,30 @@
     })
   }
 
+  // 多个请求并行请求
+  // 但是输出结果的时候，比如请求 i, 必须等待前一个 i-1的请求完成了，才可以输出结果
   function resolveByOrder(requestList) {
     // [{ promise: xxx, state: xxx }]
     // 等于 0，直接打印
     // 大于 0，判断前一个是否是 success 状态，是则打印；否则 await 等待前一个 promise success 后再打印
-    const queue = [];
 
+    // 思路: 记录每一个请求的状态 -> 每一个请求结束后更新状态，且根据题意进行判断逻辑处理
+    // 数据结构 [{ promise: xxx, state: xxx }]
+    const queue = [];
     for (let i = 0; i < requestList.length; i++) {
-      const request = requestList[i]();
-      queue[i] = { promise: request, state: 'pending' };
-      request
-        .then(async (data) => {
-          queue[i].state = 'success';
-          if (i === 0) {
-            console.log('0:', i, data, queue);
-          } else if (queue[i - 1].state === 'success') {
-            console.log('1:' ,i, data, queue);
-          } else {
-            await queue[i - 1].promise;
-            console.log('2:', i, data, queue);
-          }
-        })
+      const promise = requestList[i]();
+      queue[i] = { promise, state: 'pending' };
+      promise.then(async (data) => {
+        queue[i].state = 'success';
+        if (i === 0) {
+          console.log(data);
+        } else if (queue[i - 1].state === 'success') {
+          console.log(data);
+        } else {
+          await queue[i - 1].promise;
+          console.log(data);
+        }
+      })
     }
   }
 

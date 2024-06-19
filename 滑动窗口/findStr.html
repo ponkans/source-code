@@ -70,7 +70,7 @@
   // [200, 800, -300, 400, -200, 600, 100]
   // 长度为n的子数组的最大和
   function findMaxSum(arr, n) {
-    let left = 0, right = 0;
+    let left = 0, right = -1;
     let maxSum = 0, sum = 0;
 
     // 初始化窗口
@@ -79,7 +79,6 @@
       right++;
       n--;
     }
-    right--;
     maxSum = sum;
 
     // 滑动窗口

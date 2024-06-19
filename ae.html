@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-  
+  <!-- 备注：这几个的执行顺序，相互影响，需要找官方文档学习下，有助于性能优化！ -->
+  <!-- 最终效果是展示 3333 跟 222 -->
+  <div>111</div>
+  <script>
+    // 这里的时候，页面上已经渲染出了 111
+    const one = document.getElementsByTagName('div')[0];
+    one.innerText = '3333';
+    // 这里的时候，页面上展示 3333
+
+    const two = document.getElementsByTagName('div')[1];
+    // 这里异常，并不会影响后续 222 的渲染，只是浏览器会抛出异常
+    two.innerText = '4444';
+    // 这里执行完，页面才会渲染 222
+  </script>
+  <div>222</div>
 </body>
+
 <script>
   var bar = {
     myName: 'xxx.com',
     printName: function () {
       console.log(myName);
-      debugger
     }
   }
 
@@ -24,7 +40,17 @@
 
   let myName = '天猫';
   let _printName = foo();
-  _printName();
-  bar.printName();
+  _printName(); // 天猫
+  bar.printName(); // 天猫
+
+
+  //   _printName(); 调用 _printName 方法。
+  // 当执行 _printName() 时，它实际上调用的是 bar.printName 方法。然而，这个方法的执行上下文已经不再是 bar 对象。
+  // 由于 printName 函数使用的是自由变量 myName，根据作用域链的规则，它会从当前作用域向上查找变量 myName。在 _printName 被调用时，当前作用域是全局作用域，因此会找到全局变量 myName，即 '天猫'。
+  
+  // bar.printName(); 直接调用 bar.printName 方法。
+  // 在这个调用中，printName 方法的执行上下文是 bar 对象。
+  // 但是 printName 函数中并没有使用 this.myName，而是直接使用了自由变量 myName。根据作用域链的规则，它会从当前作用域向上查找变量 myName，最终找到全局变量 myName，即 '天猫'。
 </script>
+
 </html>
