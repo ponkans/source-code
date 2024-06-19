@@ -26,9 +26,10 @@
     // 当val1和val2都为对象时，若地址相同则相等
     if (val1 === val2) return true;
 
-    // 到这一步可以判断 val1 和 val2 都是对象，为了区分 {} 和 []，如果没有此判断，会导致 deepEquals({}, []) 返回 true
-    let isEmptyObj = (Array.isArray(val1) && !Array.isArray(val2)) || (Array.isArray(val2) && !Array.isArray(val1));
-    if (isEmptyObj) return false;
+    // 到这一步可以判断 val1 和 val2 都是对象，为了区分 {} 和 []
+    // 如果没有此判断，会导致 deepEquals({}, []) 返回 true, deepEquals({ 0: 1, 1: 1 }, [1, 1]) 也返回 true 
+    let isDiffType = (Array.isArray(val1) && !Array.isArray(val2)) || (Array.isArray(val2) && !Array.isArray(val1));
+    if (isDiffType) return false;
 
     // 获取键的长度，长度不等则不同，也是为了下面遍历时以短的为基准
     if (Object.keys(val1).length !== Object.keys(val2).length) return false;
