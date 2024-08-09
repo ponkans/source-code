@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // single-spa lifecycle 利用 promise、promise.all 管控
+
+    const apps = [
+      {
+        name: "child1",
+        loadApp: () => {
+          window["child1"] = {
+            bootstrap: () => {
+              return new Promise((resolve) => {
+                console.log("child1 bootstrap run");
+                resolve();
+              });
+            },
+            mount: () => {
+              return new Promise((resolve) => {
+                const child = document.createElement("div");
+                child.setAttribute("id", "child1");
+                child.textContent = "微应用: child1";
+                document.body.appendChild(child);
+                resolve();
+              });
+            },
+            unmount: () => {
+              return new Promise((resolve) => {
+                const child1 = document.getElementById("child1");
+                if (child1) document.body.removeChild(child1);
+                resolve();
+              });
+            },
+          };
+          return Promise.resolve("child1 load success");
+        },
+      },
+      {
+        name: "child2",
+        loadApp: () => {
+          window["child2"] = {
+            bootstrap: () =>
+              new Promise((resolve) => {
+                console.log("child2 bootstrap run");
+                resolve();
+              }),
+            mount: () => {
+              return new Promise((resolve) => {
+                const child = document.createElement("div");
+                child.setAttribute("id", "child2");
+                child.textContent = "微应用: child2";
+                document.body.appendChild(child);
+                resolve();
+              });
+            },
+            unmount: () => {
+              return new Promise((resolve) => {
+                const child2 = document.getElementById("child2");
+                if (child2) document.body.removeChild(child2);
+                resolve();
+              });
+            },
+          };
+          return Promise.resolve("child1 load success");
+        },
+      },
+    ];
+
+    // 针对单个 app，都有自己的生命周期管控, 生命周期有顺序
+    // 合并成一个 promise.all: [load -> bootstrap -> unmount -> mount]
+    // 针对微应用生命周期，抽离 reasonableTime 进行复用
+
+    function run() {
+      const allPromises = apps.map((app) => {
+        app.status = "init";
+        return loadPromise(app).then((app) => tryToBootstrapAndMount(app));
+      });
+      Promise.all(allPromises).then(() => {
+        console.log("全部结束");
+      });
+    }
+    run();
+
+    function loadPromise(app) {
+      return new Promise((resolve) => {
+        app.loadApp().then(() => {
+          console.log("loadStart:", app.status);
+          app.status = "loadDone";
+          if (app.name === "child1") {
+            setTimeout(() => {
+              return resolve(app);
+            }, 2000);
+          } else {
+            return resolve(app);
+          }
+        });
+      });
+    }
+
+    // bootstrap -> unmount -> mount
+    function tryToBootstrapAndMount(app) {
+      return bootstrapPromise(app)
+        .then((app) => unmountPromise(app))
+        .then((app) => mountPromise(app));
+    }
+
+    function reasonableTime(app, lifecycle) {
+      return new Promise((resolve) => {
+        window[app.name][lifecycle]().then(resolve);
+      });
+    }
+
+    function bootstrapPromise(app) {
+      return reasonableTime(app, "bootstrap").then(() => {
+        console.log("bootstrapStart:", app.status);
+        app.status = "bootstrapDone";
+        return app;
+      });
+    }
+
+    function mountPromise(app) {
+      return reasonableTime(app, "mount").then(() => {
+        console.log("mountStart:", app.status);
+        app.status = "mountDone";
+        return app;
+      });
+    }
+
+    function unmountPromise(app) {
+      return reasonableTime(app, "unmount").then(() => {
+        console.log("unmountStart:", app.status);
+        app.status = "unmountDone";
+        return app;
+      });
+    }
+  </script>
+</html>

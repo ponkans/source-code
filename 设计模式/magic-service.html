@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // magic-service plugin 实现姿势，自己写写
+    // 关键词: 队列、promise、生产消费(外部生产 plugin 并注入，hook对应阶段进行消费)
+
+    class Hook {
+      constructor() {
+        this.tasks = [];
+      }
+
+      tap = (task) => {
+        Array.isArray(task) ? this.tasks.push(...task) : this.tasks.push(task);
+      }
+
+      call = (args) => {
+        return this.tasks.reduce((pre, task) => {
+          return pre.then(data => task(args, data));
+        }, Promise.resolve(args));
+      }
+    }
+
+    const hooks = ['bootstrap', 'mount', 'unmount'];
+
+    class Lifecycle {
+      constructor(plugins) {
+        this.hooks = {};
+        hooks.forEach(hook => {
+          this.hooks[hook] = new Hook();
+        });
+        plugins.forEach(plugin => {
+          plugin.apply(this);
+        })
+      }
+
+      run = () => {
+        const runHooks = new Hook();
+        runHooks.tap([this.bootstrap, this.mount, this.unmount]);
+        runHooks.call(this);
+      }
+
+      bootstrap = () => {
+        return this.hooks.bootstrap.call(this).then(() => {
+          return Promise.resolve('bootstrap done');
+        })
+      }
+
+      mount = () => {
+        return this.hooks.mount.call(this).then(() => {
+          return Promise.resolve('mount done');
+        })
+      }
+
+      unmount = () => {
+        return this.hooks.unmount.call(this).then(() => {
+          return Promise.resolve('unmount done');
+        })
+      }
+    }
+
+    class LogPlugin {
+      apply(lifecycle) {
+        lifecycle.hooks.bootstrap.tap(() => {
+          console.log('注入的 bootstrap log');
+        })
+      }
+    }
+
+    const lifecycleIns = new Lifecycle([new LogPlugin()]);
+    lifecycleIns.run();
+  </script>
+</html>
