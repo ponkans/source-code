@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  //@ts-nocheck
+// 策略模式，常用于表单校验。
+// 其实就是各个条件可以拆分为单独的策略，使用的时候进行组合，校验等场景都可以使用
+
+const strategies = {
+  checkEmpty: (value) => !!value,
+  checkNumber: (value) => /^[0-9]*$/g.test(value),
+};
+
+class Validator {
+  constructor() {
+    this.rules = [];
+  }
+
+  add = (value, rule, errorMsg) => {
+    this.rules.push({
+      validFn: () => {
+        return strategies[rule](value);
+      },
+      errorMsg,
+    });
+  };
+
+  check = () => {
+    for (let { validFn, errorMsg } of this.rules) {
+      const checkSuccess = validFn();
+      if (!checkSuccess) {
+        return Promise.reject(new Error(errorMsg));
+      }
+    }
+    return Promise.resolve();
+  };
+}
+
+// 使用姿势:
+const emailValidator = (_, value) => {
+  const validator = new Validator();
+  validator.add(value, "checkEmpty", "不能为空");
+  validator.add(value, "checkNumber", "必须为数字哦");
+  return validator.check();
+};
+
+emailValidator('', '');
+emailValidator('', 'xx');
+
+</script>
+</html>
